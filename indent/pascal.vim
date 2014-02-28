@@ -1,14 +1,11 @@
 " Vim indent file
 " Language:    Pascal
-" Maintainer:  Neil Carter <n.carter@swansea.ac.uk>
+" Original Maintainer:  Neil Carter <n.carter@swansea.ac.uk>
 " Created:     2004 Jul 13
-" Last Change: 2011 Apr 01
+" Last Change: 2014 Feb 28
 "
-" This is version 2.0, a complete rewrite.
+" This is version 3.0, a complete rewrite.
 "
-" For further documentation, see http://psy.swansea.ac.uk/staff/carter/vim/
-
-set debug+=msg
 
 if exists("b:did_indent")
     finish
@@ -17,14 +14,19 @@ let b:did_indent = 1
 
 setlocal indentexpr=GetPascalIndent(v:lnum)
 setlocal indentkeys&
-setlocal indentkeys+==~end;,=~const,=~type,=~var,=~begin,=~repeat,=~until,=~for
-setlocal indentkeys+==~interface,=~implementation,=~class,=~unit
-setlocal indentkeys+==~program,=~function,=~procedure,=~object,=~private
-setlocal indentkeys+==~record,=~if,=~else,=~case
+setlocal indentkeys+==;,0=~const,0=~type,0=~var,0=~begin,0=~until
+setlocal indentkeys+=0=~interface,0=~implementation,=~class,0=~unit
+setlocal indentkeys+=0=~program,=~function,=~procedure,=~object
+setlocal indentkeys+=0=~private,0=~protected,0=~public,0=~published
+setlocal indentkeys+==~record,0=~if,0=~else,0=~case
+setlocal indentkeys+=0=~else,0=~do,0=~then,0=~of
 
 if exists("*GetPascalIndent")
     finish
 endif
+
+"set debug+=msg
+let s:maxParOff = 30  " Nb of lines to look back for unmatched '(' or '['.
 
 
 function! s:IsComment(lnum, col)
@@ -32,24 +34,32 @@ function! s:IsComment(lnum, col)
                 \ =~? '\(Comment\|Todo|PreProc\)$'
 endfunction
 
+function! s:IsNonCode(lnum, col)
+    return synIDattr(synID(a:lnum, a:col, 0), 'name')
+                \ =~? '\(Comment\|Todo|PreProc\|String\)$'
+endfunction
+
+let s:nonCodeStartPat = "'" . '\|{\|(\*'
+let s:nonCodeEndPat   = "'" . '\|}\|\*)'
+
 function! s:LStripLine(lnum)
     let lstr = getline(a:lnum)
     let llen = len(lstr)
-    
+
     let iStart = 0
     let i = iStart
     while 1
         " Skip whitespace
         let i = matchend(lstr, '^\s\+', i + 1)
         let i = i < 0 ? iStart : i
-        
-        " Skip comment
-        while i < llen && s:IsComment(a:lnum, i + 1)
-           let r = matchend(lstr, '}\|\*)', i)
-           if r < 0
-               return ''
-           endif
-           let i = r
+
+        " Skip comment and string
+        while i < llen && s:IsNonCode(a:lnum, i + 1)
+            let r = matchend(lstr, s:nonCodeEndPat, i)
+            if r < 0
+                return ''
+            endif
+            let i = r
         endwhile
         if i == iStart " Stop if no progress has been made
             break
@@ -57,7 +67,12 @@ function! s:LStripLine(lnum)
         let iStart = i
     endwhile
 
-    return strpart(lstr, iStart)
+    if iStart > 0 && lstr[iStart - 1] == "'"
+        let prefix = "''"
+    else
+        let prefix = ""
+    endif
+    return prefix . strpart(lstr, iStart)
 endfunction
 
 
@@ -66,40 +81,45 @@ function! s:StrRStripWs(s)
 endfunction
 
 function! s:FullStripLine(lnum)
-    let str = s:LStripLine(a:lnum)
+    let str = s:LStripLine(a:lnum)  " Comment could start on previous line
 
-    " Add 1 to form a column index (instead of a string index)
+    " Add 1 to form a column index (instead of a string index)searchpair('(\|\[', '', ')\|\]', 'bW',
     let iStart = strlen(getline(a:lnum)) - strlen(str) + 1
-    let i = 0
+    let i = 1
     while 1
 
-        " Find start of comment
-        let i = match(str, '{\|(\*', i)
+        " Find start of comment or string
+        let i = match(str, s:nonCodeStartPat, i)
         if i < 0
             return s:StrRStripWs(str)
         endif
-        if !s:IsComment(a:lnum, iStart + i)
+        if !s:IsNonCode(a:lnum, iStart + i)
             let i += 1
             continue
         endif
-        
-        " Find end of this comment
-        let j = i
+
+        " Find end of this comment or string
+        let j = i + 1
         while 1
-            let j = matchend(str, '}\|\*)', j)
-            if j < 0 || j == strlen(str) " No more code on this line
+            let j = matchend(str, s:nonCodeEndPat, j)
+            if j < 0 " No more code on this line
                 return s:StrRStripWs(strpart(str, 0, i))
             endif
-            if !IsComment(a:lnum, iStart + j)
-                break " Found it!
+            if !s:IsNonCode(a:lnum, iStart + j)
+                break  " Found it!
             endif
             let j += 1
         endwhile
 
         let iStart += j
-        let str = strpart(str, 0, i) . strpart(str, j)
+        let mid = str[i] == "'" ? "''" : ""
+        let str = strpart(str, 0, i) . mid . strpart(str, j)
         let i = 0
     endwhile
+endfunction
+
+function! PasFullStripLine(lnum)
+    return s:FullStripLine(a:lnum)
 endfunction
 
 
@@ -113,169 +133,183 @@ function! s:GetPrevCodeLineNum(lnum)
             break
         endif
     endwhile
-
     return nline
 endfunction
 
+function! s:SearchParPair(stopline)
+    return searchpair('(\|\[', '', ')\|\]', 'bW',
+                \ 's:IsNonCode(".", ".")', max([0, a:stopline]))
+endfunction
 
-function! GetPascalIndent( lnum )
+let s:secStartPat = '\c^\(const\|var\|type\|uses\|'
+            \ . 'public\|protected\|private\|published\)\>'
+let s:beginLikePat = '\<\(begin\|record\|class\|object\|case\>.\+\<of\)$'
+let s:chapStartPat = '^\(interface\|implementation\|\(program\|unit\)\>.\+;\)$'
 
-    " Line 0 always goes at column 1
-    if a:lnum == 0
+
+" Return how many more open than close pars are on this line (negative: more
+" closing ones)
+function! s:ParDiff(lstr)
+   let nOpen = strlen(substitute(a:lstr, '[^[(]', '', 'g'))
+   let nClose = strlen(substitute(a:lstr, '[^\])]', '', 'g'))
+   return nOpen - nClose
+endfunction
+
+function! GetPascalIndent(lnum)
+    let plnum = s:GetPrevCodeLineNum(a:lnum)
+
+    if plnum <= 0  " (Before) first code line in the file
+        "echom a:lnum . ': #1: First line.'
         return 0
     endif
 
-    " SAME INDENT
+    let lstr = s:FullStripLine(a:lnum)
+    "if lstr ==# '' &&  match(getline(a:lnum), '\S') >= 0
+    "    "echom a:lnum . ': #2: Comment or string.'
+    "    return indent(plnum)
+    "endif
 
-    " Comment
-     if s:IsComment(a:lnum, 1)
-         return -1
-     endif
-
-    let this_codeline = s:FullStripLine( a:lnum )
-
-    " COLUMN 1 ALWAYS
-
-    " Last line of the program
-    if this_codeline =~? '^end\.'
+    if lstr =~? s:chapStartPat
+        "echom a:lnum . ': #2+1: chapStart.'
         return 0
     endif
 
-    " section headers
-    if this_codeline =~? '^program\>'
-        return 0
-    endif
+    let plstr = s:FullStripLine(plnum)
+    let dedent = max([0, indent(plnum) - &shiftwidth])
 
-    " Subroutine separators, lines ending with "const" or "var"
-    if this_codeline =~? '^\((\*\ _\+\ \*)\|\(const\|var\)\)$'
-        return 0
-    endif
-
-
-    " OTHERWISE, WE NEED TO LOOK FURTHER BACK...
-
-    let prev_codeline_num = s:GetPrevCodeLineNum( a:lnum )
-    let prev_codeline = s:FullStripLine( prev_codeline_num )
-    let indnt = indent( prev_codeline_num )
-    " echom "indnt: " . indnt . " prev_codeline_num: " . prev_codeline_num
-
-    " INCREASE INDENT
-
-    " If the PREVIOUS LINE ended in these items, always indent
-    if prev_codeline =~? '\<\(type\|const\|var\)$'
-        return indnt + &shiftwidth
-    endif
-
-    if prev_codeline =~? '\<repeat$'
-        if this_codeline !~? '^until\>'
-            return indnt + &shiftwidth
-        else
-            return indnt
+    call cursor(plnum + 1, 1)
+    if s:SearchParPair(plnum) > 0
+        "echom 'Found unmatched par on previous line'
+        if getline('.')[col('.') - 1] =~? '\[\|('  " more opening pars?
+            let parIdx = max([strridx(plstr, '('), stridx(plstr, '[')])
+            if parIdx == strlen(plstr) - 1
+                "echom a:lnum . ': #3: Unmatched [ or ( in previous line @EOL'
+                return indent(plnum) + &shiftwidth
+            endif
+            "echom a:lnum . ': #3+1 Unmatched [ or ( in previous line, not @EOL'
+            return col('.') 
         endif
     endif
 
-    if prev_codeline =~? '\<\(begin\|record\)$'
-        if this_codeline !~? '^end\>'
-            return indnt + &shiftwidth
-        else
-            return indnt
+    if lstr =~? '^[)\]]\+'
+        let parDiff = s:ParDiff(lstr)
+        let mlnum = a:lnum
+    else
+        let parDiff = s:ParDiff(plstr)
+        let mlnum = plnum
+    endif
+    if parDiff < 0
+        while parDiff < 0 && mlnum > 0
+            "echom 'parDiff at ' . mlnum . ': ' . parDiff
+            let mlnum = s:GetPrevCodeLineNum(mlnum)
+            let parDiff += s:ParDiff(s:FullStripLine(mlnum)) 
+        endwhile
+        if mlnum > 0
+            "echom a:lnum . ': #3+2: Dedent to matching openPar on line ' . mlnum
+            return indent(mlnum)
         endif
     endif
 
-    " If the PREVIOUS LINE ended with these items, indent if not
-    " followed by "begin"
-    if prev_codeline =~? '\<\(else\|then\|do\)\|:$'
-        if this_codeline !~? '^begin\>'
-            return indnt + &shiftwidth
-        else
-            " If it does start with "begin" then keep the same indent
-            "return indnt + &shiftwidth
-            return indnt
+    if plstr =~? s:chapStartPat
+        "echom a:lnum . ': #4+1: First line after chapStart'
+        return indent(plnum) + &shiftwidth
+    endif
+
+    if lstr =~? '^end\>'
+        if plstr =~? s:beginLikePat
+            "echom a:lnum . ': #5: end w/ preceding begin-like'
+            return indent(plnum)
+        endif
+        "echom a:lnum . ': #6: end w/o preceding begin-like'
+        return dedent 
+    endif  " if lstr =~? '^end\>'
+
+    if lstr =~? '^until\>'
+        if plstr =~? '^repeat\>'
+            "echom a:lnum . ': #7: until w/ preceding repeat'
+            return indent(plnum)
+        endif
+        "echom a:lnum . ': #8: until w/o precding repeat'
+        return dedent
+    endif " if lstr =~? '^until\>'
+
+    let secstart = matchend(plstr, s:secStartPat . '\s*')
+    call cursor(plnum, secstart)
+    let parLNum = s:SearchParPair(plnum - s:maxParOff)
+    " "var" and "const" may appear as function argument modifiers
+    if parLNum <= 0 || getline(".")[col(".") - 1] !~? '(\|\['
+        if secstart >= 0
+            if lstr !~? s:secStartPat && lstr !~? '^begin\>'
+                if secstart == strlen(plstr)
+                    "echom a:lnum . ': #9: Section start at EOL'
+                    return indent(plnum) + &shiftwidth
+                endif
+                "echom a:lnum . ': #10: Section start with trailing code'
+                return indent(plnum) + secstart
+            endif
+            "echom a:lnum . ': #11: Consecutive section starts'
+            return indent(plnum)
         endif
     endif
 
-    " TODO: Statement without terminating semicolon (exept if followed by
-    " "else")
-    
-    " DECREASE INDENT
-
-    " Lines starting with "else", but not following line ending with
-    " "end".
-    if this_codeline =~? '^else\>' && prev_codeline !~? '\<end$'
-        return indnt - &shiftwidth
-    endif
-    
-
-    " Lines after a single-statement branch/loop.
-    " Two lines before ended in "then", "else", or "do"
-    " Previous line didn't end in "begin"
-    let prev2_codeline_num = s:GetPrevCodeLineNum( prev_codeline_num )
-    let prev2_codeline = s:FullStripLine( prev2_codeline_num )
-    if prev2_codeline =~? '\<\(then\|else\|do\)$' && prev_codeline !~? '\<begin$'
-        " If the next code line after a single statement branch/loop
-        " starts with "end", "except" or "finally", we need an
-        " additional unindentation.
-        if this_codeline =~? '^\(end\s*;\|except\|finally\|\)$'
-            " Note that we don't return from here.
-            return indnt - &shiftwidth - &shiftwidth
+    if plstr =~? '\<\(do\|then\|else\)$'
+        if lstr =~? '^begin\>' 
+            "echom a:lnum . ': #12: begin following do, then or else'
+            return indent(plnum)
         endif
-        return indnt - &shiftwidth
+        "echom a:lnum . ': #12+0+1: Line != begin following do, then or else'
+        return indent(plnum) + &shiftwidth
     endif
 
-    " Lines starting with "until" or "end". This rule must be overridden
-    " by the one for "end" after a single-statement branch/loop. In
-    " other words that rule should come before this one.
-    if this_codeline =~? '^\(end\|until\)\>'
-        return indnt - &shiftwidth
+    if plstr =~? s:beginLikePat
+        "echom a:lnum . ': #12+1: line following begin-like'
+        return indent(plnum) + &shiftwidth
     endif
 
-
-
-    " ____________________________________________________________________
-    " Object/Borland Pascal/Delphi Extensions
-    "
-    " Note that extended-pascal is handled here, unless it is simpler to
-    " handle them in the standard-pascal section above.
-
-
-    " COLUMN 1 ALWAYS
-
-    " section headers at start of line.
-    if this_codeline =~? '^\(interface\|implementation\|unit\)\>'
-        return 0
+    let pIsFuncStart =
+                \ plstr =~? '\<\(function\|procedure\)\>'
+                \ && plstr !~? '\<forward\s*;'
+    if lstr =~? '^begin\>' && pIsFuncStart
+        "echom a:lnum . ': #12+2: Function code starts here'
+        return indent(plnum)
     endif
 
+    if plstr !~? ';$'
+        if lstr =~? '\<\(do\|then\|else\|of\)$'
+            "echom a:lnum . ': #13: else, do, of or then following line w/o trailing ;'
+            return dedent
+        endif
+        let pplnum = s:GetPrevCodeLineNum(plnum)
+        if pplnum > 0
+            let pplstr = s:FullStripLine(pplnum)
+            if pplstr =~? s:beginLikePat || pplstr =~? s:secStartPat
+                        \ || pplstr =~? s:chapStartPat
+                        \ || pplstr =~? '\<\(do\|then\|else\|of\)$'
+                "echom a:lnum . ': #14: first line following one w/o ;'
+                return indent(plnum) + &shiftwidth
+            endif
+            "echom a:lnum . ': #15: line following more than one w/o ;'
+            return indent(plnum)
+        endif
+        "echom a:lnum . ': #16: line following one w/o ; which is the first'
+        return indent(plnum) + &shiftwidth
+    endif  " if plstr !~= ';$'
 
-    " INDENT ONCE
-
-    " If the PREVIOUS LINE ended in these items, always indent.
-    let pat = '^unit\>\|^\('
-    let pat .= 'uses\|try\|except\|finally\|interface\|implementation'
-    let pat .= '\|private\|protected\|public\|published'
-    let pat .= '\)$'
-    if prev_codeline =~? pat
-        return indnt + &shiftwidth
+    if plstr =~? '\<\(function\|procedure\)\>.*;.*\<forward\>' 
+        "echom a:lnum . ': #17: line following proc/func forward declaration.'
+        return indent(plnum)
     endif
 
-    " ???? Indent "procedure" and "functions" if they appear within an
-    " class/object definition. But that means overriding standard-pascal
-    " rule where these words always go in column 1.
-
-
-    " UNINDENT ONCE
-
-    if this_codeline =~? '^\(except\|finally\)$'
-        return indnt - &shiftwidth
+    let pplnum = s:GetPrevCodeLineNum(plnum)
+    if pplnum > 0
+        let pplstr = s:FullStripLine(pplnum)
+        if pplstr =~? '\<\(do\|then\|else\)$'
+            "echom a:lnum . ': #16+1: Single-sub-stmt controlstatement ended.'
+            return dedent
+        endif
     endif
 
-    if this_codeline =~? '^\(private\|protected\|public\|published\)$'
-        return indnt - &shiftwidth
-    endif
-
-
-    " ____________________________________________________________________
-
-    " If nothing changed, return same indent.
-    return indnt
+    "echom a:lnum . ': #0: No rule found'
+    return -1
 endfunction
 
