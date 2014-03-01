@@ -14,7 +14,7 @@ let b:did_indent = 1
 
 setlocal indentexpr=GetPascalIndent(v:lnum)
 setlocal indentkeys&
-setlocal indentkeys+=;,0=~const,0=~type,0=~var,0=~begin,0=~until
+setlocal indentkeys+=0=~end.,;,0=~const,0=~type,0=~var,0=~begin,0=~until
 setlocal indentkeys+=0=~interface,0=~implementation,=~class,0=~unit
 setlocal indentkeys+=0=~program,=~function,=~procedure,=~object
 setlocal indentkeys+=0=~private,0=~protected,0=~public,0=~published
@@ -72,16 +72,20 @@ function! s:LStripLine(lnum)
 endfunction
 
 
-function! s:StrRStripWs(s)
-    return strpart(a:s, 0, match(a:s, '\s*$'))
+function! s:StrStripWs(s)
+    return substitute(a:s, '^\s\+\|\s\+$', '', 'g')
 endfunction
 
+" Removes all comments, preprocessor comments and strings from the line.
+" Returns the stripped string and a list of [strIdx, colOffset] pairs,
+" sorted by strIdx, descending. This is for use with StrippedIdxToCol.
 function! s:FullStripLine(lnum)
     let str = s:LStripLine(a:lnum)  " Comment could start on previous line
 
     " Add 1 to form a column index (instead of a string index)
     let iStart = strlen(getline(a:lnum)) - strlen(str) + 1
     echom 'str: "' . str . '"; iStart: ' . iStart
+    let offsets = [[0, iStart]]
     let i = 1
     while 1
 
@@ -89,7 +93,7 @@ function! s:FullStripLine(lnum)
         let i = match(str, s:nonCodeStartPat, i)
         echom 'match at ' . i
         if i < 0
-            return s:StrRStripWs(str)
+            return [s:StrStripWs(str), offsets]
         endif
         if !s:IsNonCode(a:lnum, iStart + i)
             let i += 1
@@ -101,7 +105,7 @@ function! s:FullStripLine(lnum)
         while 1
             let j = matchend(str, s:nonCodeEndPat, j)
             if j < 0 " No more code on this line
-                return s:StrRStripWs(strpart(str, 0, i))
+                return [s:StrStripWs(strpart(str, 0, i)), offsets]
             endif
             if !s:IsNonCode(a:lnum, iStart + j)
                 break  " Found it!
@@ -110,12 +114,21 @@ function! s:FullStripLine(lnum)
         endwhile
         let str = strpart(str, 0, i) . strpart(str, j)
         let iStart += j - i
+        call insert(offsets, [i, iStart])
         echom 'str: "' . str . '"; iStart: ' . iStart . '; i: ' . i
     endwhile
 endfunction
 
-function! PasFullStripLine(lnum)
-    return s:FullStripLine(a:lnum)
+"function! PasFullStripLine(lnum)
+"    return s:FullStripLine(a:lnum)
+"endfunction
+
+function! s:StrippedIdxToCol(idx, offs)
+    for [begIdx, offset] in a:offs
+        if begIdx <= a:idx
+            return a:idx + offset
+        endif
+    endfor
 endfunction
 
 
@@ -141,7 +154,8 @@ let s:secStartPat = '\c^\(const\|var\|type\|uses\|'
             \ . 'public\|protected\|private\|published\)\>'
 let s:beginLikePat = '\c\<\(record\|class\|object\|'
             \. 'begin\|case\>.\+\<of\|repeat\)$'
-let s:chapStartPat = '\c^\(interface\|implementation\|\(program\|unit\)\>.\+;\)$'
+let s:chapStartPat =
+            \ '\c^\(interface\|implementation\|\(program\|unit\)\>.\+;\)$'
 
 
 " Return how many more open than close pars are on this line (negative: more
@@ -160,7 +174,7 @@ function! GetPascalIndent(lnum)
         return 0
     endif
 
-    let lstr = s:FullStripLine(a:lnum)
+    let [lstr, loffs] = s:FullStripLine(a:lnum)
     "if lstr ==# '' &&  match(getline(a:lnum), '\S') >= 0
     "    echom a:lnum . ': #2: Comment or string.'
     "    return indent(plnum)
@@ -171,8 +185,32 @@ function! GetPascalIndent(lnum)
         return 0
     endif
 
-    let plstr = s:FullStripLine(plnum)
+    let [plstr, ploffs] = s:FullStripLine(plnum)
     let dedent = max([0, indent(plnum) - &shiftwidth])
+
+    if lstr =~? '^[)\]]\+'
+        let parDiff = s:ParDiff(lstr)
+        let mlnum = a:lnum
+    else
+        let parDiff = s:ParDiff(plstr)
+        let mlnum = plnum
+    endif
+    if parDiff < 0
+        while parDiff < 0 && mlnum > 0
+            echom 'parDiff at ' . mlnum . ': ' . parDiff
+            let mlnum = s:GetPrevCodeLineNum(mlnum)
+            let parDiff += s:ParDiff(s:FullStripLine(mlnum)[0])
+        endwhile
+        if mlnum > 0
+            if parDiff > 0
+                echom a:lnum . ': #2+2: closing pars do not close all on opening line'
+                return indent(mlnum) + &shiftwidth
+            endif
+            echom a:lnum . ': #3+2: closing pars on this or prev line' . mlnum
+            return indent(mlnum)
+        endif
+    endif
+
 
     call cursor(plnum + 1, 1)
     if s:SearchParPair(plnum) > 0
@@ -188,27 +226,8 @@ function! GetPascalIndent(lnum)
         endif
     endif
 
-    if lstr =~? '^[)\]]\+'
-        let parDiff = s:ParDiff(lstr)
-        let mlnum = a:lnum
-    else
-        let parDiff = s:ParDiff(plstr)
-        let mlnum = plnum
-    endif
-    if parDiff < 0
-        while parDiff < 0 && mlnum > 0
-            echom 'parDiff at ' . mlnum . ': ' . parDiff
-            let mlnum = s:GetPrevCodeLineNum(mlnum)
-            let parDiff += s:ParDiff(s:FullStripLine(mlnum)) 
-        endwhile
-        if mlnum > 0
-            echom a:lnum . ': #3+2: closing pars on this or prev line' . mlnum
-            return indent(mlnum)
-        endif
-    endif
-
     if plstr =~? s:chapStartPat
-        if lstr =~? '^begin\>' && plstr
+        if lstr =~? '^begin\>'
             " NOTE: This ignores that after "interface" (and "unit"?) "begin"
             " would be a syntax error.
             echom a:lnum . ': #3+3: begin after chapStart'
@@ -242,18 +261,24 @@ function! GetPascalIndent(lnum)
     endif
 
     let secstart = matchend(plstr, s:secStartPat . '\s*')
-    call cursor(plnum, secstart)
+    call cursor(plnum, s:StrippedIdxToCol(secstart, ploffs))
     let parLNum = s:SearchParPair(plnum - s:maxParOff)
     " "var" and "const" may appear as function argument modifiers
     if parLNum <= 0 || getline(".")[col(".") - 1] !~? '(\|\['
         if secstart >= 0
-            if lstr !~? s:secStartPat && lstr !~? '^begin\>'
+            if lstr !~? s:secStartPat
+                        \ && lstr !~? '^\(begin\|function\|procedure\)\>'
                 if secstart == strlen(plstr)
                     echom a:lnum . ': #9: Section start at EOL'
                     return indent(plnum) + &shiftwidth
                 endif
                 echom a:lnum . ': #10: Section start with trailing code'
-                return indent(plnum) + secstart
+                " Indent is one less than the position
+                return s:StrippedIdxToCol(secstart, ploffs) - 1
+            endif
+            if lstr =~? '^begin\>'
+                echom a:lnum . ': #10+1: begin after section start'
+                return dedent;
             endif
             echom a:lnum . ': #11: Consecutive section starts'
             return indent(plnum)
@@ -284,10 +309,10 @@ function! GetPascalIndent(lnum)
         endif
         let pplnum = s:GetPrevCodeLineNum(plnum)
         if pplnum > 0
-            let pplstr = s:FullStripLine(pplnum)
+            let [pplstr, pploffs] = s:FullStripLine(pplnum)
             if pplstr =~? s:beginLikePat || pplstr =~? s:secStartPat
                         \ || pplstr =~? s:chapStartPat
-                        \ || pplstr =~? '\<\(do\|then\|else\|of\)$'
+                        \ || pplstr =~? '\<\(do\|then\|else\|of\|;\)$'
                 echom a:lnum . ': #14: first line following one w/o ;'
                 return indent(plnum) + &shiftwidth
             endif
@@ -305,9 +330,9 @@ function! GetPascalIndent(lnum)
 
     let pplnum = s:GetPrevCodeLineNum(plnum)
     if pplnum > 0
-        let pplstr = s:FullStripLine(pplnum)
-        if pplstr =~? '\<\(do\|then\|else\)$'
-            echom a:lnum . ': #16+1: Single-sub-stmt controlstatement ended.'
+        let [pplstr, pploffs] = s:FullStripLine(pplnum)
+        if pplstr !~? ';$'
+            echom a:lnum . ': #16+1: First line after indented continuation.'
             return dedent
         endif
     endif
