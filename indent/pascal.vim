@@ -84,14 +84,14 @@ function! s:FullStripLine(lnum)
 
     " Add 1 to form a column index (instead of a string index)
     let iStart = strlen(getline(a:lnum)) - strlen(str) + 1
-    echom 'str: "' . str . '"; iStart: ' . iStart
+    "echom 'str: "' . str . '"; iStart: ' . iStart
     let offsets = [[0, iStart]]
     let i = 1
     while 1
 
         " Find start of comment or string
         let i = match(str, s:nonCodeStartPat, i)
-        echom 'match at ' . i
+        "echom 'match at ' . i
         if i < 0
             return [s:StrStripWs(str), offsets]
         endif
@@ -115,7 +115,7 @@ function! s:FullStripLine(lnum)
         let str = strpart(str, 0, i) . strpart(str, j)
         let iStart += j - i
         call insert(offsets, [i, iStart])
-        echom 'str: "' . str . '"; iStart: ' . iStart . '; i: ' . i
+        "echom 'str: "' . str . '"; iStart: ' . iStart . '; i: ' . i
     endwhile
 endfunction
 
@@ -133,7 +133,6 @@ endfunction
 
 
 function! s:GetPrevCodeLineNum(lnum)
-
     " Skip lines consisting only of comments and/or whitespace
     let nline = a:lnum
     while nline > 0
@@ -147,13 +146,21 @@ endfunction
 
 function! s:SearchParPair(stopline)
     return searchpair('(\|\[', '', ')\|\]', 'bW',
-                \ 's:IsNonCode(".", ".")', max([0, a:stopline]))
+                \ 's:IsNonCode(".", ".")', max([1, a:stopline]))
 endfunction
 
-let s:secStartPat = '\c^\(const\|var\|type\|uses\|'
-            \ . 'public\|protected\|private\|published\)\>'
-let s:beginLikePat = '\c\<\(record\|class\|object\|'
-            \. 'begin\|case\>.\+\<of\|repeat\)$'
+let s:secStartPat = '\c^\(const\|var\|type\|uses'
+if exists('pascal_delphi')
+    let s:secStartPat += '\|public\|protected\|private\|published'
+endif
+let s:secStartPat += '\)\>'
+
+let s:beginLikePat = '\c\<\(record\|begin\|of'
+if exists('pascal_delphi')
+    let s:beginLikePat += '\|class\|object\|try\|except\|finally'
+endif
+let s:beginLikePat += '\)$'
+
 let s:chapStartPat =
             \ '\c^\(interface\|implementation\|\(program\|unit\)\>.\+;\)$'
 
@@ -244,7 +251,7 @@ function! GetPascalIndent(lnum)
         endif
         echom a:lnum . ': #6: end w/o preceding begin-like'
         return dedent 
-    endif  " if lstr =~? '^end\>'
+    endif
 
     if lstr =~? '^until\>'
         if plstr =~? '^repeat\>'
@@ -253,9 +260,18 @@ function! GetPascalIndent(lnum)
         endif
         echom a:lnum . ': #8: until w/o precding repeat'
         return dedent
-    endif " if lstr =~? '^until\>'
+    endif
 
-    if plstr =~? s:beginLikePat
+    if exists('pascal_delphi') && lstr =~? '^\(except\|finally\)\>'
+        if plstr =~? '\<\(try\|except\)$'
+            echom a:lnum . ': #6+1: except/finally w/ preceding try/except'
+            return indent(plnum)
+        endif
+        echom a:lnum . ': #6: except/finally w/o preceding try/except'
+        return dedent
+    endif
+
+    if plstr =~? s:beginLikePat || plstr =~? '\<repeat$'
         echom a:lnum . ': #12+1: line following begin-like'
         return indent(plnum) + &shiftwidth
     endif
@@ -312,6 +328,7 @@ function! GetPascalIndent(lnum)
             let [pplstr, pploffs] = s:FullStripLine(pplnum)
             if pplstr =~? s:beginLikePat || pplstr =~? s:secStartPat
                         \ || pplstr =~? s:chapStartPat
+                        \ || pplstr =~? '\<repeat$'
                         \ || pplstr =~? '\<\(do\|then\|else\|of\|;\)$'
                 echom a:lnum . ': #14: first line following one w/o ;'
                 return indent(plnum) + &shiftwidth
