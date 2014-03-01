@@ -31,26 +31,28 @@ let s:maxParOff = 30  " Nb of lines to look back for unmatched '(' or '['.
 
 function! s:IsComment(lnum, col)
     return synIDattr(synID(a:lnum, a:col, 0), 'name')
-                \ =~? '\(Comment\|Todo|PreProc\)$'
+                \ =~? '\(Comment\|Todo\|PreProc\)$'
 endfunction
 
 function! s:IsNonCode(lnum, col)
     return synIDattr(synID(a:lnum, a:col, 0), 'name')
-                \ =~? '\(Comment\|Todo|PreProc\|String\)$'
+                \ =~? '\(Comment\|Todo\|PreProc\|String\)$'
 endfunction
 
+let s:commentStartPat = '{\|(\*'
+let s:commentEndPat = '}\|\*)'
 let s:nonCodeStartPat = "'" . '\|{\|(\*'
 let s:nonCodeEndPat   = "'" . '\|}\|\*)'
 
 function! s:LStripLine(lnum)
     let lstr = getline(a:lnum)
-    let llen = len(lstr)
+    let llen = strlen(lstr)
 
     let iStart = 0
     let i = iStart
     while 1
         " Skip whitespace
-        let i = matchend(lstr, '^\s\+', i + 1)
+        let i = matchend(lstr, '^\s\+', i)
         let i = i < 0 ? iStart : i
 
         " Skip comment and string
@@ -66,13 +68,7 @@ function! s:LStripLine(lnum)
         endif
         let iStart = i
     endwhile
-
-    if iStart > 0 && lstr[iStart - 1] == "'"
-        let prefix = "''"
-    else
-        let prefix = ""
-    endif
-    return prefix . strpart(lstr, iStart)
+    return strpart(lstr, iStart)
 endfunction
 
 
@@ -83,13 +79,15 @@ endfunction
 function! s:FullStripLine(lnum)
     let str = s:LStripLine(a:lnum)  " Comment could start on previous line
 
-    " Add 1 to form a column index (instead of a string index)searchpair('(\|\[', '', ')\|\]', 'bW',
+    " Add 1 to form a column index (instead of a string index)
     let iStart = strlen(getline(a:lnum)) - strlen(str) + 1
+    echom 'str: "' . str . '"; iStart: ' . iStart
     let i = 1
     while 1
 
         " Find start of comment or string
         let i = match(str, s:nonCodeStartPat, i)
+        echom 'match at ' . i
         if i < 0
             return s:StrRStripWs(str)
         endif
@@ -110,11 +108,9 @@ function! s:FullStripLine(lnum)
             endif
             let j += 1
         endwhile
-
-        let iStart += j
-        let mid = str[i] == "'" ? "''" : ""
-        let str = strpart(str, 0, i) . mid . strpart(str, j)
-        let i = 0
+        let str = strpart(str, 0, i) . strpart(str, j)
+        let iStart += j - i
+        echom 'str: "' . str . '"; iStart: ' . iStart . '; i: ' . i
     endwhile
 endfunction
 
