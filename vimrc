@@ -1,9 +1,10 @@
 set nocompatible
 
 let mapleader = ' '  " Space
+set debug+=msg
 
 " ---------------------------------------------------------------------------
-" Fileformat settings:
+" Fileformat settings: {{{
 
 set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
 set fileformats=unix,dos  " Unix LF by default (but still can read CRLF)
@@ -14,9 +15,10 @@ set shiftwidth=4
 set softtabstop=4
 set expandtab
 
+" }}}
 
 " ---------------------------------------------------------------------------
-" Editing features:
+" Editing features: {{{
 
 filetype on         " Enable filetype detection
 filetype plugin on  " Enable plugins for filetypes
@@ -26,15 +28,22 @@ set autoindent  " Keep indentation of last line by default
 " Allow backspacing over autoindent, line breaks, and start of insert.
 set backspace=indent,eol,start
 
+let pascal_delphi = 1
+function s:SetPascalOptions()
+    setlocal shiftwidth=2
+    setlocal softtabstop=2
+endfunction
+
 augroup vrcFiletypes
     " Remove everything from this group (reload support):
     autocmd!
-    autocmd FileType pascal setlocal shiftwidth=2 softtabstop=2
+    autocmd FileType pascal call <SID>SetPascalOptions()
 augroup END
 
+" }}}
 
 " ---------------------------------------------------------------------------
-" Visual settings:
+" Visual settings: {{{
 
 if has('gui_running')
     set guioptions-=m  " Remove menu bar.
@@ -51,16 +60,28 @@ set guicursor=n:blinkon0  " No blinking cursor in normal mode.
 
 syntax on  " Enable syntax highlighting
 set background=dark  " Use default dark color theme by default
-if has('gui_running') || &t_Co > 255 
-    silent! colorscheme molokai  " If available, use the molokai color scheme
-endif
+silent! colorscheme badwolf
 
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
-set sidescrolloff=5  " ... 5 columns left/right ...
+set sidescrolloff=5  "       ... 5 columns left/right ...
 
+set wildmenu  " Display possible commandline completions.
+set showcmd  " Show normal mode commands in bottom line
+
+set hlsearch   " Highlight search matches in whole window...
+nohlsearch     " ...but start w/o annoying leftover highlights
+set incsearch  " Start highlighting while typing search pattern
+" End search highlighting by pressing <Esc>:
+nnoremap <silent> <Esc> :nohlsearch<Return>
+
+" }}}
 
 " ---------------------------------------------------------------------------
-" Other settings:
+
+" }}}
+
+" ---------------------------------------------------------------------------
+" Other settings: {{{
 
 " chdir to file directory:
 nnoremap <Leader>cd :lcd %:p:h<CR>
@@ -73,18 +94,24 @@ else
 endif
 
 function! VrcFileInfo() " For statusline below.
-    let enc = &fileencoding == '' ? &encoding : &fileencoding
-    let enc = enc == 'utf-8' ? '' : enc  " utf-8 is assumed anyway.
-    let ff = &fileformat == 'unix' ? '' : &fileformat  " Dito for ff == unix
-    let ext = toupper(expand('%:e'))
-    let ft = toupper(&filetype)
+    let r = []
 
-    " If filetype is obvious from extension, don't display it either 
-    if ext != '' && (stridx(ext, ft) >= 0 || stridx(ft, ext) >= 0)
-        let ft = ''
+    if &fileencoding !=# '' && &fileencoding !=? &encoding
+        call add(r, &fileencoding)
     endif
 
-    return join(filter([enc, ff, ft], 'v:val != ""'), ',')
+    if &fileformat !=# '' && &fileformat !=? 'unix'
+        call add(r, &fileformat)
+    endif
+
+    let ext = toupper(expand('%:e'))
+    let ft = toupper(&filetype)
+    " If filetype is obvious from extension, don't display it
+    if ext == '' || stridx(ext, ft) < 0 && stridx(ft, ext) < 0
+        call add(r, ft)
+    endif
+
+    return join(r, ',')
 endfunc
 
 set laststatus=2  " Always show statusbar 
@@ -99,12 +126,5 @@ set statusline+=%(\ [%{VrcFileInfo()}]%)  " File info
 
 set mouse=a   " Enable mouse in all modes.
 
-set wildmenu  " Display possible commandline completions.
-set showcmd  " Show normal mode commands in bottom line
-
-set hlsearch   " Highlight search matches in whole window...
-nohlsearch     " ...but start w/o annoying leftover highlights
-set incsearch  " Start highlighting while typing search pattern
-" End search highlighting by pressing <Esc>:
-nnoremap <silent> <Esc> :nohlsearch<Return>
+" }}}
 
