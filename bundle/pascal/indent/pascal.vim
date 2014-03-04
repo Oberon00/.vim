@@ -163,7 +163,6 @@ let s:beginLikePat .= '\)$'
 let s:chapStartPat =
             \ '\c^\(interface\|implementation\|\(program\|unit\)\>.\+;\)$'
 
-echom 'Loaded!'
 
 " Return how many more open than close pars are on this line (negative: more
 " closing ones)
