@@ -7,6 +7,7 @@ set debug+=msg
 " Fileformat settings: {{{
 
 set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
+set fileencodings=ucs-bom,utf-8,cp1252
 set fileformats=unix,dos  " Unix LF by default (but still can read CRLF)
 set fileformat=unix  " For new files, use Unix LF
 
