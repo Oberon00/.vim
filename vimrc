@@ -31,10 +31,10 @@ set autoindent  " Keep indentation of last line by default
 " Allow backspacing over autoindent, line breaks, and start of insert.
 set backspace=indent,eol,start
 
-let pascal_delphi = 1
 function s:SetPascalOptions()
     setlocal shiftwidth=2
     setlocal softtabstop=2
+    compiler fpcD
 endfunction
 
 augroup vrcFiletypes
