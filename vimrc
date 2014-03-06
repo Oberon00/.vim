@@ -91,10 +91,12 @@ nnoremap <Leader>cd :lcd %:p:h<CR>
 
 " Execute executable generated from file
 if has('win32')
-    nnoremap <F5> :!"%:r.exe"<CR>
+    nnoremap <F5> :!start cmd /k "%:r.exe"<CR>
 else
     nnoremap <F5> :!'%:r'<CR>
 endif
+
+nnoremap <F6> :make<CR>
 
 function! VrcFileInfo() " For statusline below.
     let r = []
