@@ -13,4 +13,10 @@ if exists(":CompilerSet") != 2		" older Vim always used :setlocal
 endif
 
 CompilerSet makeprg=fpc\ -Criot\ -vewhnb\ -gclt\ %
+if exists('pascal_fpc_mode')
+    execute 'CompilerSet makeprg+=\ -M' . pascal_fpc_mode
+elseif !exists('pascal_delphi')
+    CompilerSet makeprg+=\ -Mtp " Turbo-Pascal mode
+endif
+
 CompilerSet errorformat=%f(%l\\,%c)\ %m
