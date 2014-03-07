@@ -148,13 +148,15 @@ let s:secStartPat = '\c^\%(const\|var\|type\|uses'
 if exists('pascal_delphi')
     let s:secStartPat .= '\|public\|protected\|private\|published'
 endif
+let s:secOrFuncStartPat = s:secStartPat . '\|function\|procedure\)\>'
 let s:secStartPat .= '\)\>'
+
 
 let s:beginLikePat = '\c\<\%(record\|begin\|of'
 if exists('pascal_delphi')
     let s:beginLikePat .= '\|class\|object\|except\|finally'
 endif
-let s:beginLikePat .= '\)'
+let s:beginLikePat .= '\)' " Users have to append $/\>.
 
 let s:chapStartPat =
             \ '\c^\%(interface\|implementation\|\%(program\|unit\)\>.\+;\)$'
@@ -192,13 +194,12 @@ function! s:FindPrevLineWith(pat, lnum, stopline)
             return [lnum, lstr]
         endif
     endwhile
-    return 0
+    return [0, '']
 endfunction
 
 function! s:IsStrIncompleteStmt(s)
     return a:s !~? s:beginLikePat . '$' && a:s !~? s:secStartPat
-                \ && a:s !~? s:chapStartPat
-                \ && a:s !~? '\<\%(repeat\|do\|then\|else\|of\)$\|;$'
+                \ && a:s !~? s:chapStartPat && a:s !~? '\<repeat$\|;$\|:$'
                 \ && (!exists('pascal_delphi') || a:s !~? '\<try$')
 endfunction
 
@@ -210,7 +211,7 @@ function! GetPascalIndent(lnum)
         return 0
     endif
 
-    let lstr = s:FullStripLine(a:lnum)[0]
+    let [lstr, loffs] = s:FullStripLine(a:lnum)
 
     if lstr =~? s:chapStartPat
         "echom a:lnum . ': #2: chapStart.'
@@ -230,8 +231,13 @@ function! GetPascalIndent(lnum)
                 return max([indent(a:lnum), indent(plnum) + &shiftwidth])
             endif
             "echom a:lnum . ': #3b: Unmatched [ or ( in previous line, not @EOL'
-            return col('.') 
+            return col('.')
         endif
+    endif
+
+    if s:SearchParPair(plnum - s:maxParOff) > 0
+        "echom a:lnum . ': #3c: Line in unmatched ( or ['
+        return -1
     endif
 
     if plstr =~? s:chapStartPat
@@ -292,13 +298,21 @@ function! GetPascalIndent(lnum)
     endif
 
     let pSecStart = matchend(plstr, s:secStartPat . '\s*')
-    let lIsSecStart = lstr =~? s:secStartPat
+    let secStart = matchend( lstr, s:secOrFuncStartPat . '\s*')
+    let lIsSecStart = secStart >= 0
+    if lIsSecStart
+        " var/const inside parenthesis are argument modifiers, not real
+        " section starts.
+        call cursor(a:lnum, s:StrippedIdxToCol(secStart, loffs))
+        let lIsSecStart = s:SearchParPair(a:lnum - s:maxParOff) <= 0
+    endif
+
     if pSecStart >= 0
         call cursor(plnum, s:StrippedIdxToCol(pSecStart, ploffs))
         let parLNum = s:SearchParPair(plnum - s:maxParOff)
         " "var" and "const" may appear as function argument modifiers
         if parLNum <= 0 || getline(".")[col(".") - 1] !~? '(\|\['
-            if !lIsSecStart && lstr !~? '^\%(begin\|function\|procedure\)\>'
+            if !lIsSecStart && lstr !~? '^begin\>'
                 if pSecStart == strlen(plstr)
                     "echom a:lnum . ': #9a: Section start at EOL'
                     return indent(plnum) + &shiftwidth
@@ -318,26 +332,46 @@ function! GetPascalIndent(lnum)
 
     if lIsSecStart
         " Align with previous secStart, if any
-        let breakPat = '\<\%(function\|procedure\|begin\)\>'
         let [pSecStartLNum, pSecStartLStr] = s:FindPrevLineWith(
-                    \ s:secStartPat . '\|' . breakPat, 
+                    \ s:secOrFuncStartPat . '\|\<\%(begin\|forward\)\>',
                     \ plnum + 1, plnum - s:maxParOff)
-        if pSecStartLStr =~? breakPat 
-            "echom a:lnum . ': #10a: Section start following func/proc (code)'
-            return -1
+        let pSecStartCol = matchend(pSecStartLStr, '\c^\%(var\|const\)\>')
+        if pSecStartCol > 0
+            call cursor(pSecStartLNum, pSecStartCol)
+            let parLNum = s:SearchParPair(pSecStartLNum - s:maxParOff)
+            if parLNum > 0
+                " var/const in parens => at opening par should be func/proc
+                "echom 'Adjusted pSecStartLNum from ' . pSecStartLNum
+                let pSecStartLNum = parLNum
+                let pSecStartLStr = s:FullStripLine(pSecStartLNum)[0]
+            endif
+        else
+            let pSecStartCol = matchend(pSecStartLStr, '\c\<begin\>')
+            if pSecStartCol > 0
+                let [pSecStartLNum, pSecStartLStr] = s:FindPrevLineWith(
+                            \ '\c\<end\>', plnum + 1, plnum - s:maxParOff)
+            endif
         endif
-        call cursor(pSecStartLNum, 1)
-        if s:SearchParPair(pSecStartLNum - s:maxParOff) > 0
-            "echom a:lnum . ': #10b: Section start following prob. func/proc'
-            return -1
+        if pSecStartLStr =~? '\<forward\>'
+            "echom a:lnum . ': #10a: Section start following func/proc fwddecl'
+            return indent(pSecStartLNum)
         endif
-        "echom a:lnum . ': #10c: Section start (aligned with previous one)'
+        if pSecStartLStr =~? '\<\%(function\|procedure\)\>'
+            let [chapLNum, chapLStr] = s:FindPrevLineWith(s:chapStartPat,
+                        \ pSecStartLNum + 1, 1)
+            "echom 'chapLNum ' . chapLNum . ' chapLStr ' . chapLStr
+            if chapLStr =~? '\<\%(implementation\|program\)\>'
+                "echom a:lnum . ': #10b: Sec in func/proc impl' . pSecStartLNum
+                return indent(pSecStartLNum) + &shiftwidth
+            endif
+        endif
+        "echom a:lnum . ': #10c: secstart aligned with prev @ ' . pSecStartLNum
         return indent(pSecStartLNum)
     endif
 
 
     if plstr =~? '\<\%(do\|then\|else\)$'
-        if lstr =~? '^begin\>' 
+        if lstr =~? '^begin\>'
             "echom a:lnum . ': #11a: begin following do, then or else'
             return indent(plnum)
         endif
@@ -359,19 +393,21 @@ function! GetPascalIndent(lnum)
     if lstr =~? '^\%(do\|then\|of\)\>'
         let mlnum = s:FindPrevLineWith('\c\<\%(while\|if\|case\)\>',
                     \ a:lnum, a:lnum - s:maxParOff)[0]
-        "echom a:lnum . ': #13: do/of/then after matching line ' . mlnum 
+        "echom a:lnum . ': #13: do/of/then after matching line ' . mlnum
         return mlnum > 0 ? indent(mlnum) : dedent
     endif
 
     if lstr =~? '^else\>'
-        if plstr =~? '\<end\>'
-            return indent(plnum)
-            "echom a:lnum . ' #14a: else following end'
+        let [mlnum, mlstr] = s:FindPrevLineWith('\<\%(if\|else\|case\)\>',
+                    \ a:lnum, a:lnum - s:maxParOff)
+        if match(mlstr, '\c\<case\>') > match(mlstr, '\c\<\%(if\|else\)\>')
+            let mlnum = s:FindPrevLineWith(':\s\|:$',
+                        \ a:lnum, a:lnum - s:maxParOff)[0]
+        elseif match(mlstr, '\c\<else\>') > match(mlstr, '\c\<if\>')
+            let mlnum = -1
         endif
-       let mlnum = s:FindPrevLineWith('\c\<if\>',
-                   \ a:lnum, a:lnum -s:maxParOff)[0]
-       "echom a:lnum . ' #14b: else matching if on line ' . mlnum
-       return mlnum > 0 ? indent(mlnum) : dedent
+        "echom a:lnum . ' #14b: else matching if/case label on line ' . mlnum
+        return mlnum > 0 ? indent(mlnum) : -1
     endif
 
     let parStartLine = lstr =~? '^[)\]]\+' ? a:lnum : plnum
@@ -383,7 +419,7 @@ function! GetPascalIndent(lnum)
         endif
         if mlnum == 1 || !s:IsStrIncompleteStmt(s:FullStripLine(mlnum - 1)[0])
             "echom a:lnum . ': #15b: closing pars (cont), matching  ' . mlnum
-            return indent(mlnum + &shiftwidth)
+            return indent(mlnum) + &shiftwidth
         endif
         "echom a:lnum . ': #15c: closing pars, matching ' . mlnum
         return indent(mlnum)
@@ -393,7 +429,10 @@ function! GetPascalIndent(lnum)
         let pplnum = s:GetPrevCodeLineNum(plnum)
         if pplnum > 0
             let pplstr = s:FullStripLine(pplnum)[0]
+            " BUG: The condidition below leads to dedent of second statement
+            " in an else belonging to case-of, which does not need begin/end.
             if !s:IsStrIncompleteStmt(pplstr) && pplstr !~? '^uses\>'
+                        \ || pplstr =~? '\<\%(do\|then\|else\)\>'
                 "echom a:lnum . ': #16b: first line following one w/o ;'
                 return indent(plnum) + &shiftwidth
             endif
@@ -404,7 +443,7 @@ function! GetPascalIndent(lnum)
         return indent(plnum) + &shiftwidth
     endif
 
-    if plstr =~? '\<\%(function\|procedure\)\>.*;.*\<forward\>' 
+    if plstr =~? '\<\%(function\|procedure\)\>.*;.*\<forward\>'
         "echom a:lnum . ': #17: line following proc/func forward declaration.'
         return indent(plnum)
     endif
