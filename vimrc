@@ -134,5 +134,6 @@ set statusline+=%(\ [%{VrcFileInfo()}]%)  " File info
 
 set mouse=a   " Enable mouse in all modes.
 
+set shortmess+=I  " No intro-message
 " }}}
 
