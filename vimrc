@@ -97,7 +97,7 @@ else
     nnoremap <F5> :!'%:r'<CR>
 endif
 
-nnoremap <F6> :make!<CR>:copen<CR>
+nnoremap <F6> :w<CR>:make!<CR>:copen<CR><C-W>p
 nnoremap <Leader>j :cnext<CR>
 nnoremap <Leader>k :cprevious<CR>
 
