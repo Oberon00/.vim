@@ -47,6 +47,13 @@ augroup END
 " }}}
 
 " ---------------------------------------------------------------------------
+" UltiSnips configuration: {{{
+
+let g:UltiSnipsEditSplit="vertical"
+
+" }}}
+
+" ---------------------------------------------------------------------------
 " Visual settings: {{{
 
 if has('gui_running')
