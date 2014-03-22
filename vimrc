@@ -39,7 +39,6 @@ function s:SetPascalOptions()
 endfunction
 
 augroup vrcFiletypes
-    " Remove everything from this group (reload support):
     autocmd!
     autocmd FileType pascal call <SID>SetPascalOptions()
 augroup END
@@ -98,7 +97,17 @@ nnoremap <silent> <Esc> :nohlsearch<Return>
 " Other settings: {{{
 
 " chdir to file directory:
-nnoremap <Leader>cd :lcd %:p:h<CR>
+function! s:EnterDir()
+    if expand('%:p:h') !~? '\v/tmp|\\\\' && expand('%:t') != ''
+        lcd %:p:h
+    endif
+endfunc
+
+nnoremap <Leader>cd :lcd %:p:h<CR>:pwd<CR>
+augroup vrcMisc
+    autocmd!
+    autocmd BufEnter * call <SID>EnterDir()
+augroup END
 
 " Execute executable generated from file
 if has('win32')
@@ -110,6 +119,12 @@ endif
 nnoremap <F6> :w<CR>:make!<CR>:copen<CR><C-W>p
 nnoremap <Leader>j :cnext<CR>
 nnoremap <Leader>k :cprevious<CR>
+
+if has('win32')
+    nnoremap <silent><C-CR> :exec 'silent !start ' . &shell<CR>
+    nnoremap <silent><C-S-CR> :silent !start explorer .<CR>
+endif
+
 
 function! VrcFileInfo() " For statusline below.
     let r = []
@@ -159,5 +174,6 @@ inoremap <expr><silent> <CR> neocomplete#close_popup() . "\<CR>"
 inoremap <expr><C-g> neocomplete#undo_completion()
 inoremap <expr><BS> neocomplete#smart_close_popup()."\<BS>"
 
+set hidden
 " }}}
 
