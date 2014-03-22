@@ -49,7 +49,10 @@ augroup END
 " ---------------------------------------------------------------------------
 " UltiSnips configuration: {{{
 
-let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsEditSplit = 'vertical'
+let g:UltiSnipsExpandTrigger = '<C-j>'
+let g:UltiSnipsJumpForwardTrigger = '<C-k>'
+let g:UltiSnipsJumpBackwardTrigger = '<C-h>'
 
 " }}}
 
@@ -142,5 +145,19 @@ set statusline+=%(\ [%{VrcFileInfo()}]%)  " File info
 set mouse=a   " Enable mouse in all modes.
 
 set shortmess+=I  " No intro-message
+
+let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_smart_case = 1
+let g:neocomplete#enable_ignore_case = 1
+let g:neocomplete#auto_completion_start_length = 4
+let g:neocomplete#sources#syntax#min_keyword_length = 4
+call neocomplete#custom#source('ultisnips', 'min_pattern_length', 4)
+
+set completeopt-=preview
+inoremap <expr> <TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><silent> <CR> neocomplete#close_popup() . "\<CR>"
+inoremap <expr><C-g> neocomplete#undo_completion()
+inoremap <expr><BS> neocomplete#smart_close_popup()."\<BS>"
+
 " }}}
 
