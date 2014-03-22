@@ -2,7 +2,7 @@ set nocompatible
 
 let mapleader = '-'
 noremap - <NOP>
-set debug+=msg
+"set debug+=msg
 
 " ---------------------------------------------------------------------------
 " Fileformat settings: {{{
@@ -103,7 +103,7 @@ function! s:EnterDir()
     endif
 endfunc
 
-nnoremap <Leader>cd :lcd %:p:h<CR>:pwd<CR>
+nnoremap <Leader>cd :<C-U>lcd %:p:h<CR>:pwd<CR>
 augroup vrcMisc
     autocmd!
     autocmd BufEnter * call <SID>EnterDir()
@@ -111,18 +111,18 @@ augroup END
 
 " Execute executable generated from file
 if has('win32')
-    nnoremap <F5> :!start cmd /c "%:r.exe" & pause<CR>
+    nnoremap <F5> :<C-U>!start cmd /c "%:r.exe" & pause<CR>
 else
-    nnoremap <F5> :!'%:r'<CR>
+    nnoremap <F5> :<C-U>!'%:r'<CR>
 endif
 
-nnoremap <F6> :w<CR>:make!<CR>:copen<CR><C-W>p
-nnoremap <Leader>j :cnext<CR>
-nnoremap <Leader>k :cprevious<CR>
+nnoremap <F6> :w<CR>:<C-U>make!<CR>:copen<CR><C-W>p
+nnoremap <Leader>j :<C-U>cnext<CR>
+nnoremap <Leader>k :<C-U>cprevious<CR>
 
 if has('win32')
-    nnoremap <silent><C-CR> :exec 'silent !start ' . &shell<CR>
-    nnoremap <silent><C-S-CR> :silent !start explorer .<CR>
+    nnoremap <silent><C-CR> :<C-U>exec 'silent !start ' . &shell<CR>
+    nnoremap <silent><C-S-CR> :<C-U>silent !start explorer .<CR>
 endif
 
 
@@ -161,6 +161,9 @@ set mouse=a   " Enable mouse in all modes.
 
 set shortmess+=I  " No intro-message
 
+set ignorecase
+set smartcase
+
 let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#enable_smart_case = 1
 let g:neocomplete#enable_ignore_case = 1
@@ -171,8 +174,14 @@ call neocomplete#custom#source('ultisnips', 'min_pattern_length', 4)
 set completeopt-=preview
 inoremap <expr> <TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><silent> <CR> neocomplete#close_popup() . "\<CR>"
-inoremap <expr><C-g> neocomplete#undo_completion()
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<BS>"
+inoremap <expr> <C-g> neocomplete#undo_completion()
+inoremap <expr> <BS> neocomplete#smart_close_popup()."\<BS>"
+
+
+nnoremap <Leader>f :<C-U>Unite -start-insert file<CR>
+nnoremap <Leader>rf :<C-U>Unite -start-insert file_rec<CR>
+nnoremap <Leader>b :<C-U>Unite -start-insert buffer<CR>
+nnoremap <Leader>l :<C-U>Unite -start-insert -no-split line<CR>
 
 set hidden
 " }}}
