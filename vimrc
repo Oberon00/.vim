@@ -88,7 +88,8 @@ let g:gruvbox_italicize_strings = s:use_italics
 let s:gruvbox_contrast = 'hard'
 silent! colorscheme gruvbox
 " Highlight pascal operator-keywords in orange (like gruvbox does for Java).
-hi pascalOperator guifg=#fe8019 ctermfg=208
+hi pascalOperator guifg=#fb4934 ctermfg=167
+hi luaOperator guifg=#fb4934 ctermfg=167
 
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
 set sidescrolloff=5  "       ... 5 columns left/right ...
