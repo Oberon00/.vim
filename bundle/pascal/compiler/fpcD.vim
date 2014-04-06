@@ -12,7 +12,7 @@ if exists(":CompilerSet") != 2		" older Vim always used :setlocal
   command -nargs=* CompilerSet setlocal <args>
 endif
 
-CompilerSet makeprg=fpc\ -Criot\ -vewhnb\ -gchlt\ -Sa\ %
+CompilerSet makeprg=fpc\ -Criot\ -vewhnb\ -gclt\ -Sa\ %
 if exists('pascal_fpc_mode')
     execute 'CompilerSet makeprg+=\ -M' . pascal_fpc_mode
 elseif !exists('pascal_delphi')
