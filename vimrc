@@ -41,6 +41,7 @@ endfunction
 augroup vrcFiletypes
     autocmd!
     autocmd FileType pascal call <SID>SetPascalOptions()
+    autocmd FileType snippets setlocal noexpandtab tabstop=4
 augroup END
 
 " }}}
@@ -52,6 +53,9 @@ let g:UltiSnipsEditSplit = 'vertical'
 let g:UltiSnipsExpandTrigger = '<C-j>'
 let g:UltiSnipsJumpForwardTrigger = '<C-k>'
 let g:UltiSnipsJumpBackwardTrigger = '<C-h>'
+if has('win32')
+    let g:UltiSnipsSnippetsDir = '~/vimfiles/UltiSnips'
+endif
 
 " }}}
 
