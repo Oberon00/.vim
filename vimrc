@@ -196,7 +196,7 @@ inoremap <expr> <BS> neocomplete#smart_close_popup()."\<BS>"
 
 nnoremap <Leader>f :<C-U>Unite -start-insert file<CR>
 nnoremap <Leader>rf :<C-U>Unite -start-insert file_rec<CR>
-nnoremap <Leader>b :<C-U>Unite -start-insert buffer<CR>
+nnoremap <Leader>b :<C-U>Unite buffer<CR>
 nnoremap <Leader>l :<C-U>Unite -start-insert -no-split line<CR>
 
 set hidden
