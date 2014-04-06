@@ -32,7 +32,7 @@ set autoindent  " Keep indentation of last line by default
 " Allow backspacing over autoindent, line breaks, and start of insert.
 set backspace=indent,eol,start
 
-function s:SetPascalOptions()
+function! s:SetPascalOptions()
     setlocal shiftwidth=2
     setlocal softtabstop=2
     compiler fpcD
@@ -79,12 +79,16 @@ endif
 set guicursor=n:blinkon0  " No blinking cursor in normal mode.
 
 syntax on  " Enable syntax highlighting
+
+" Color scheme:
 set background=dark  " Use default dark color theme by default
 let s:use_italics = has('gui_running') || $TERM != 'xterm'
 let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
 let s:gruvbox_contrast = 'hard'
 silent! colorscheme gruvbox
+" Highlight pascal operator-keywords in orange (like gruvbox does for Java).
+hi pascalOperator guifg=#fe8019 ctermfg=208
 
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
 set sidescrolloff=5  "       ... 5 columns left/right ...
