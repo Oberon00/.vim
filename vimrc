@@ -69,6 +69,9 @@ if has('gui_running')
         set guifont=Consolas:h10
         set guifontwide=NSimSun:h10
     endif " if has('win32')
+    if &lines < 40
+        set lines=40
+    endif
 elseif $TERM == 'xterm'
     set t_Co=256  " Force 256 colors.
 endif
