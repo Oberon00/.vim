@@ -65,15 +65,19 @@ if has('gui_running')
         set guifont=Consolas:h10
         set guifontwide=NSimSun:h10
     endif " if has('win32')
-elseif !has('win32') && $TERM != 'linux'
-    set t_Co=256  " Try 256 colors. Add offending $TERMs to condition above 
+elseif $TERM == 'xterm'
+    set t_Co=256  " Force 256 colors.
 endif
 
 set guicursor=n:blinkon0  " No blinking cursor in normal mode.
 
 syntax on  " Enable syntax highlighting
 set background=dark  " Use default dark color theme by default
-silent! colorscheme badwolf
+let s:use_italics = has('gui_running') || $TERM != 'xterm'
+let g:gruvbox_italicize_comments = 0
+let g:gruvbox_italicize_strings = s:use_italics
+let s:gruvbox_contrast = 'hard'
+silent! colorscheme gruvbox
 
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
 set sidescrolloff=5  "       ... 5 columns left/right ...
