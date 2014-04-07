@@ -44,6 +44,8 @@ augroup vrcFiletypes
     autocmd FileType snippets setlocal noexpandtab tabstop=4
 augroup END
 
+runtime macros/matchit.vim
+
 " }}}
 
 " ---------------------------------------------------------------------------
