@@ -91,7 +91,7 @@ let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
 let s:gruvbox_contrast = 'hard'
 silent! colorscheme gruvbox
-" Highlight pascal operator-keywords in orange (like gruvbox does for Java).
+" Highlight pascal operator-keywords in red (like keywords).
 hi pascalOperator guifg=#fb4934 ctermfg=167
 hi luaOperator guifg=#fb4934 ctermfg=167
 
@@ -106,6 +106,8 @@ nohlsearch     " ...but start w/o annoying leftover highlights
 set incsearch  " Start highlighting while typing search pattern
 " End search highlighting by pressing <Esc>:
 nnoremap <silent> <Esc> :nohlsearch<Return>
+
+set clipboard=unnamed
 
 " }}}
 
@@ -204,5 +206,13 @@ nnoremap <Leader>b :<C-U>Unite buffer<CR>
 nnoremap <Leader>l :<C-U>Unite -start-insert -no-split line<CR>
 
 set hidden
+
+" Centralize backups, swapfiles and undo history
+let vimdir = has('win32') ? '~/vimfiles' : '~/.vim'
+exec 'set backupdir='. vimdir . '/backup'
+exec 'set directory='. vimdir . '/swap'
+if exists("&undodir")
+    exec 'set undodir='. vimdir . '/undo'
+endif
 " }}}
 
