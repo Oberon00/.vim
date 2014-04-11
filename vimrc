@@ -38,9 +38,17 @@ function! s:SetPascalOptions()
     compiler fpcD
 endfunction
 
+function! s:SetTexOptions()
+    setlocal shiftwidth=2
+    setlocal softtabstop=2
+    nnoremap <buffer> <F6> :<C-U>Latexmk<CR>
+    nnoremap <buffer> <F5> :<C-U>LatexView<CR>
+endfunction
+
 augroup vrcFiletypes
     autocmd!
     autocmd FileType pascal call <SID>SetPascalOptions()
+    autocmd FileType tex call <SID>SetTexOptions()
     autocmd FileType snippets setlocal noexpandtab tabstop=4
 augroup END
 
@@ -204,6 +212,16 @@ nnoremap <Leader>f :<C-U>Unite -start-insert file<CR>
 nnoremap <Leader>rf :<C-U>Unite -start-insert file_rec<CR>
 nnoremap <Leader>b :<C-U>Unite buffer<CR>
 nnoremap <Leader>l :<C-U>Unite -start-insert -no-split line<CR>
+
+
+if !has('win32')
+    " On windows this only works when patching latexmk.vim to use !start /min
+    " instead of !start /b.
+    " TODO: Try to reproduce on other machine and/or file bug.
+    let g:LatexBox_latexmk_async = 1
+endif
+" Potentially dangerous but necessary for the minted package.
+let g:LatexBox_latexmk_options = '-latexoption=-shell-escape'
 
 set hidden
 

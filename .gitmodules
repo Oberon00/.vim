@@ -22,3 +22,6 @@
 [submodule "bundle/vim-repeat"]
 	path = bundle/vim-repeat
 	url = https://github.com/tpope/vim-repeat
+[submodule "bundle/LaTeX-Box"]
+	path = bundle/LaTeX-Box
+	url = https://github.com/LaTeX-Box-Team/LaTeX-Box
