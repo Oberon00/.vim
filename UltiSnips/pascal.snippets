@@ -99,13 +99,11 @@ END; (* $1 *)
 endsnippet
 
 snippet fund "Function declaration" b
-FUNCTION ${1:funcname}${2:($3)}: ${4:TRes}; ${5:FORWARD;}
-$0
+FUNCTION ${1:funcname}${2:($3)}: ${4:TRes};
 endsnippet
 
 snippet prod "Procedure declaration" b
-PROCEDURE ${1:procname}${2:($3)}; ${4:FORWARD;}
-$0
+PROCEDURE ${1:procname}${2:($3)};
 endsnippet
 
 # 1}}} #
@@ -135,9 +133,9 @@ priority 0
 
 snippet program "PROGRAM header" b
 (* ${1:`!v expand('%:r')`}: C. Neumueller, `!v strftime('%Y-%m-%d')` *)
-(* ${2:The `!v expand('%:r')` program. *)
+(* ${2:The `!v expand('%:r')` program.} *)
 PROGRAM $1;
-	
+
 	$0
 
 BEGIN (* $1 *)
