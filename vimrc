@@ -48,7 +48,7 @@ endfunction
 augroup vrcFiletypes
     autocmd!
     autocmd FileType pascal call <SID>SetPascalOptions()
-    autocmd FileType tex call <SID>SetTexOptions()
+    autocmd FileType tex,plaintex call <SID>SetTexOptions()
     autocmd FileType snippets setlocal noexpandtab tabstop=4
 augroup END
 
@@ -222,6 +222,8 @@ if !has('win32')
 endif
 " Potentially dangerous but necessary for the minted package.
 let g:LatexBox_latexmk_options = '-latexoption=-shell-escape'
+let g:tex_flavor = "latex"
+
 
 set hidden
 
