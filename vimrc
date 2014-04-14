@@ -97,7 +97,6 @@ set background=dark  " Use default dark color theme by default
 let s:use_italics = has('gui_running') || $TERM != 'xterm'
 let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
-let s:gruvbox_contrast = 'hard'
 silent! colorscheme gruvbox
 " Highlight pascal operator-keywords in red (like keywords).
 hi pascalOperator guifg=#fb4934 ctermfg=167
