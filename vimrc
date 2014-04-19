@@ -20,6 +20,13 @@ set expandtab
 
 " }}}
 
+let g:pathogen_disabled = []
+if has('win32')
+    " vim-ipython is too much trouble on windows. I'm affected by
+    " https://github.com/ivanov/vim-ipython/issues/20 (which can be fixed) and
+    " http://bugs.python.org/issue17213 (which is very annoying).
+    call add(g:pathogen_disabled, 'vim-ipython')
+endif
 call pathogen#infect()
 
 " ---------------------------------------------------------------------------
@@ -238,3 +245,7 @@ endif
 
 " <C-]> is untypeable on a german keyboard.
 nnoremap <CR> <C-]>
+
+let g:ipy_perform_mappings = 0
+let g:ipy_completefunc = 0
+
