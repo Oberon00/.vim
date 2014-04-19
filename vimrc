@@ -1,4 +1,5 @@
 set nocompatible
+scriptencoding utf-8
 
 let mapleader = '-'
 noremap - <NOP>
@@ -41,7 +42,7 @@ endfunction
 function! s:SetTexOptions()
     setlocal shiftwidth=2
     setlocal softtabstop=2
-    nnoremap <buffer> <F6> :<C-U>Latexmk<CR>
+    nnoremap <buffer> <F6> :<C-U>w<CR>:<C-U>Latexmk<CR>
     nnoremap <buffer> <F5> :<C-U>LatexView<CR>
 endfunction
 
@@ -235,3 +236,5 @@ if exists("&undodir")
 endif
 " }}}
 
+" <C-]> is untypeable on a german keyboard.
+nnoremap <CR> <C-]>
