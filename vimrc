@@ -101,14 +101,36 @@ set guicursor=n:blinkon0  " No blinking cursor in normal mode.
 syntax on  " Enable syntax highlighting
 
 " Color scheme:
-set background=dark  " Use default dark color theme by default
+function! s:SetDarkBackground()
+    let g:gruvbox_contrast = 'soft'
+    set background=dark  " Use default dark color theme by default
+    " Highlight pascal operator-keywords in red (like keywords).
+    hi pascalOperator guifg=#fb4934 ctermfg=167
+    hi luaOperator guifg=#fb4934 ctermfg=167
+endfunction
+
+function! s:SetLightBackground()
+    let g:gruvbox_contrast = 'hard'
+    set background=light
+    " Highlight pascal operator-keywords in red (like keywords).
+    hi pascalOperator guifg=#9d0006 ctermfg=88
+    hi luaOperator guifg=#9d0006 ctermfg=88
+endfunction
+
+function! s:ToggleBackground()
+    if &background ==# 'light'
+        call s:SetDarkBackground()
+    else
+        call s:SetLightBackground()
+    endif
+endfunction
+noremap <silent> <F2> :<C-U>call <SID>ToggleBackground()<CR>
+
+call s:SetDarkBackground()
 let s:use_italics = has('gui_running') || $TERM != 'xterm'
 let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
 silent! colorscheme gruvbox
-" Highlight pascal operator-keywords in red (like keywords).
-hi pascalOperator guifg=#fb4934 ctermfg=167
-hi luaOperator guifg=#fb4934 ctermfg=167
 
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
 set sidescrolloff=5  "       ... 5 columns left/right ...
