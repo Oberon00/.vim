@@ -29,7 +29,7 @@ syn keyword pascalConditional	if else then
 syn keyword pascalConstant	nil maxint
 syn keyword pascalLabel		case goto label
 syn keyword pascalOperator	and div downto in mod not of or packed with
-syn keyword pascalRepeat	do for do repeat while to until
+syn keyword pascalRepeat	do for repeat while to until
 syn keyword pascalStatement	procedure function
 syn keyword pascalStatement	program begin end const var type
 syn keyword pascalStruct	record
@@ -100,6 +100,7 @@ if exists("pascal_symbol_operator")
   "syn match  pascalMatrixDelimiter	"[\d\+\.\.\d\+]"
 endif
 
+syn match  pascalCharConstant	"#\d\+\>"
 syn match  pascalNumber		"-\=\<\d\+\>"
 syn match  pascalFloat		"-\=\<\d\+\.\d\+\>"
 syn match  pascalFloat		"-\=\<\d\+\.\d\+[eE]-\=\d\+\>"
@@ -109,8 +110,8 @@ if exists("pascal_no_tabs")
   syn match pascalShowTab "\t"
 endif
 
-syn region pascalComment	start="(\*\|{"  end="\*)\|}" contains=pascalTodo,pascalSpaceError
-
+syn region pascalComment	start="(\*"  end="\*)" contains=pascalTodo,pascalSpaceError
+syn region pascalComment	start="{"  end="}" contains=pascalTodo,pascalSpaceError
 
 if !exists("pascal_no_functions")
   " array functions
@@ -220,6 +221,14 @@ if !exists("pascal_traditional")
     " string functions
     syn keyword pascalFunction	Concat Copy Delete Insert Length Pos Str Val
 
+    " additional string functions
+    syn keyword pascalFunction	StrAlloc StrBufSize StrCat StrComp StrCopy
+    syn keyword pascalFunction	StrDispose StrECopy StrEnd StrFmt StrIComp
+    syn keyword pascalFunction	StrLCat StrLComp StrLCopy StrLen StrLFmt
+    syn keyword pascalFunction	StrLIComp StrLower StrMove StrNew StrPas
+    syn keyword pascalFunction	StrPCopy StrPLCopy StrPos StrRScan StrScan
+    syn keyword pascalFunction	StrUpper
+
     " memory function
     syn keyword pascalFunction	FreeMem GetMem MaxAvail MemAvail
 
@@ -310,13 +319,6 @@ if !exists("pascal_traditional")
       syn keyword pascalType     LineSettingsType PaletteType PointType
       syn keyword pascalType     TextSettingsType ViewPortType
     endif
-    " string functions
-    syn keyword pascalFunction	StrAlloc StrBufSize StrCat StrComp StrCopy
-    syn keyword pascalFunction	StrDispose StrECopy StrEnd StrFmt StrIComp
-    syn keyword pascalFunction	StrLCat StrLComp StrLCopy StrLen StrLFmt
-    syn keyword pascalFunction	StrLIComp StrLower StrMove StrNew StrPas
-    syn keyword pascalFunction	StrPCopy StrPLCopy StrPos StrRScan StrScan
-    syn keyword pascalFunction	StrUpper
   endif
 
 endif
@@ -346,6 +348,7 @@ if version >= 508 || !exists("did_pascal_syn_inits")
   HiLink pascalMatrixDelimiter	Identifier
   HiLink pascalModifier		Type
   HiLink pascalNumber		Number
+  HiLink pascalHexNumber	Number
   HiLink pascalOperator		Operator
   HiLink pascalPredefined	pascalStatement
   HiLink pascalPreProc		PreProc
@@ -365,6 +368,7 @@ if version >= 508 || !exists("did_pascal_syn_inits")
   HiLink pascalError		Error
   HiLink pascalAsmKey		pascalStatement
   HiLink pascalShowTab		Error
+  HiLink pascalCharConstant     Character
 
   delcommand HiLink
 endif
