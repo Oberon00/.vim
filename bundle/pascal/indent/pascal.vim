@@ -16,10 +16,9 @@ setlocal indentexpr=GetPascalIndent(v:lnum)
 setlocal indentkeys&
 setlocal indentkeys+=0=~end.,;,0=~const,0=~type,0=~var,0=~begin,0=~until
 setlocal indentkeys+=0=~interface,0=~implementation,=~class,0=~unit
-setlocal indentkeys+=0=~program,=~function,=~procedure,=~object
+setlocal indentkeys+=0=~program,=~function,=~procedure
 setlocal indentkeys+=0=~private,0=~protected,0=~public,0=~published
-setlocal indentkeys+==~record,0=~else,0=~case
-setlocal indentkeys+=0=~else,0=~do,0=~then,0=~of
+setlocal indentkeys+=0=~else
 if exists('pascal_delphi')
     setlocal indentkeys+=0=~except,0=~finally
 endif
