@@ -28,3 +28,6 @@
 [submodule "bundle/vim-ipython"]
 	path = bundle/vim-ipython
 	url = https://github.com/ivanov/vim-ipython
+[submodule "bundle/supertab"]
+	path = bundle/supertab
+	url = https://github.com/ervandew/supertab
