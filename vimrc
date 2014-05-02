@@ -10,7 +10,7 @@ noremap - <NOP>
 
 set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
 set fileencodings=ucs-bom,utf-8,cp1252
-set fileformats=unix,dos  " Unix LF by default (but still can read CRLF)
+set fileformats=unix,dos,mac  " Unix LF by default (but still can read CRLF)
 set fileformat=unix  " For new files, use Unix LF
 
 " Indentation is 4 spaces, but (existing) hard tabs still occupy 8 columns.
@@ -104,17 +104,11 @@ syntax on  " Enable syntax highlighting
 function! s:SetDarkBackground()
     let g:gruvbox_contrast = 'soft'
     set background=dark  " Use default dark color theme by default
-    " Highlight pascal operator-keywords in red (like keywords).
-    hi pascalOperator guifg=#fb4934 ctermfg=167
-    hi luaOperator guifg=#fb4934 ctermfg=167
 endfunction
 
 function! s:SetLightBackground()
     let g:gruvbox_contrast = 'hard'
     set background=light
-    " Highlight pascal operator-keywords in red (like keywords).
-    hi pascalOperator guifg=#9d0006 ctermfg=88
-    hi luaOperator guifg=#9d0006 ctermfg=88
 endfunction
 
 function! s:ToggleBackground()
@@ -130,6 +124,8 @@ call s:SetDarkBackground()
 let s:use_italics = has('gui_running') || $TERM != 'xterm'
 let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
+hi! link pascalOperator Keyword
+hi! link luaOperator Keyword
 silent! colorscheme gruvbox
 
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
@@ -257,11 +253,11 @@ let g:tex_flavor = "latex"
 set hidden
 
 " Centralize backups, swapfiles and undo history
-let vimdir = has('win32') ? '~/vimfiles' : '~/.vim'
-exec 'set backupdir='. vimdir . '/backup'
-exec 'set directory='. vimdir . '/swap'
+let s:vimdir = has('win32') ? '~/vimfiles' : '~/.vim'
+exec 'set backupdir='. s:vimdir . '/backup'
+exec 'set directory='. s:vimdir . '/swap'
 if exists("&undodir")
-    exec 'set undodir='. vimdir . '/undo'
+    exec 'set undodir='. s:vimdir . '/undo'
 endif
 " }}}
 
