@@ -110,8 +110,16 @@ if exists("pascal_no_tabs")
   syn match pascalShowTab "\t"
 endif
 
-syn region pascalComment	start="(\*"  end="\*)" contains=pascalTodo,pascalSpaceError
-syn region pascalComment	start="{"  end="}" contains=pascalTodo,pascalSpaceError
+syn match pascalCommentEndError "\*)"
+syn match pascalCommentEndError "}"
+syn match pascalCommentStartError "(\*" contained
+
+syn cluster pascalInComment contains=pascalTodo,pascalSpaceError
+syn cluster pascalInParComment contains=@pascalInComment,pascalCommentStartError
+syn cluster pascalInBraceComment contains=@pascalInComment,pascalBraceComment
+
+syn region pascalComment matchgroup=pascalCommentStart start="(\*" end="\*)" contains=@pascalInParComment
+syn region pascalBraceComment start="{" end="}" contains=@pascalInBraceComment
 
 if !exists("pascal_no_functions")
   " array functions
@@ -336,7 +344,11 @@ if version >= 508 || !exists("did_pascal_syn_inits")
 
   HiLink pascalAcces		pascalStatement
   HiLink pascalBoolean		Boolean
+  HiLink pascalCommentStart     pascalComment
+  HiLink pascalBraceComment     pascalComment
   HiLink pascalComment		Comment
+  HiLink pascalCommentStartError pascalError
+  HiLink pascalCommentEndError  pascalError
   HiLink pascalConditional	Conditional
   HiLink pascalConstant		Constant
   HiLink pascalDelimiter	Identifier
@@ -353,12 +365,12 @@ if version >= 508 || !exists("did_pascal_syn_inits")
   HiLink pascalPredefined	pascalStatement
   HiLink pascalPreProc		PreProc
   HiLink pascalRepeat		Repeat
-  HiLink pascalSpaceError	Error
+  HiLink pascalSpaceError	pascalError
   HiLink pascalStatement	Statement
   HiLink pascalString		String
   HiLink pascalStringEscape	Special
   HiLink pascalStringEscapeGPC	Special
-  HiLink pascalStringError	Error
+  HiLink pascalStringError	pascalError
   HiLink pascalStruct		pascalStatement
   HiLink pascalSymbolOperator	pascalOperator
   HiLink pascalTodo		Todo
@@ -367,7 +379,7 @@ if version >= 508 || !exists("did_pascal_syn_inits")
   "  HiLink pascalAsm		Assembler
   HiLink pascalError		Error
   HiLink pascalAsmKey		pascalStatement
-  HiLink pascalShowTab		Error
+  HiLink pascalShowTab		pascalError
   HiLink pascalCharConstant     Character
 
   delcommand HiLink
