@@ -41,8 +41,8 @@ set autoindent  " Keep indentation of last line by default
 set backspace=indent,eol,start
 
 function! s:SetPascalOptions()
-    setlocal shiftwidth=2
-    setlocal softtabstop=2
+    setlocal shiftwidth=2 softtabstop=2 textwidth=82
+    setlocal foldmethod=syntax
     compiler fpcD
 endfunction
 
