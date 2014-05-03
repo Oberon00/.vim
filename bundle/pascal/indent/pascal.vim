@@ -29,14 +29,6 @@ endif
 
 let s:maxParOff = 30  " Nb of lines to look back for unmatched '(' or '['.
 
-
-function! s:IsNonCode(lnum, col)
-    return synIDattr(synID(a:lnum, a:col, 0), 'name')
-                \ =~? '\%(Comment\|Todo\|PreProc\|String\)$'
-endfunction
-
-let s:isCursorNonCodeExpr = 's:IsNonCode(line("."), col("."))'
-
 let s:nonCodeStartPat = "'" . '\|{\|(\*'
 let s:nonCodeEndPat   = "'" . '\|}\|\*)'
 
@@ -52,7 +44,7 @@ function! s:LStripLine(lnum)
         let i = i < 0 ? iStart : i
 
         " Skip comment and string
-        while i < llen && s:IsNonCode(a:lnum, i + 1)
+        while i < llen && pashgb#IsNonCode(a:lnum, i + 1)
             let r = matchend(lstr, s:nonCodeEndPat, i)
             if r < 0
                 return ''
@@ -89,7 +81,7 @@ function! s:FullStripLine(lnum)
         if i < 0
             return [s:StrStripWs(str), offsets]
         endif
-        if !s:IsNonCode(a:lnum, iStart + i)
+        if !pashgb#IsNonCode(a:lnum, iStart + i)
             let i += 1
             continue
         endif
@@ -102,7 +94,7 @@ function! s:FullStripLine(lnum)
             if j < 0 " No more code on this line
                 return [s:StrStripWs(strpart(str, 0, i)), offsets]
             endif
-            if !s:IsNonCode(a:lnum, iStart + j)
+            if !pashgb#IsNonCode(a:lnum, iStart + j)
                 break  " Found it!
             endif
             "echom 'non-code @ j = ' . j . '/col ' . (iStart + j)
@@ -111,10 +103,6 @@ function! s:FullStripLine(lnum)
         let iStart += j - i
         call insert(offsets, [i, iStart])
     endwhile
-endfunction
-
-function! PasFullStripLine(lnum)
-    return s:FullStripLine(a:lnum)
 endfunction
 
 function! s:StrippedIdxToCol(idx, offs)
@@ -140,7 +128,7 @@ endfunction
 
 function! s:SearchParPair(stopline)
     return searchpair('(\|\[', '', ')\|\]', 'bW',
-                \ s:isCursorNonCodeExpr, max([1, a:stopline]))
+                \ g:pashgb#isCursorNonCodeExpr, max([1, a:stopline]))
 endfunction
 
 let s:secStartPat = '\c^\%(const\|var\|type\|uses'
@@ -252,8 +240,7 @@ function! GetPascalIndent(lnum)
 
     if lstr =~? '^end\>'
         call cursor(a:lnum, 1)
-        let mlnum = searchpair(s:beginLikePat . '\>', '', '\c\<end\>',
-                    \ 'bW', s:isCursorNonCodeExpr)
+        let mlnum = pashgb#SearchBegEndPair('bW')
         if mlnum > 0
             let [parMLNum, parDiff] = s:FindOpeningLine(mlnum)
             "echom a:lnum . ': #5a: end ind. to matching beg-like @'
@@ -267,7 +254,7 @@ function! GetPascalIndent(lnum)
     if lstr =~? '^until\>'
         call cursor(a:lnum, 1)
         let mlnum = searchpair('\c\<repeat\>', '', '\c\<until\>',
-                    \ 'bW', s:isCursorNonCodeExpr)
+                    \ 'bW', g:pashgb#isCursorNonCodeExpr)
         if mlnum > 0
             "echom a:lnum . ': #6a: until ind. to matching repeat @' . mlnum
             return indent(mlnum)
@@ -279,7 +266,7 @@ function! GetPascalIndent(lnum)
     if exists('pascal_delphi') && lstr =~? '^\%(except\|finally\)\>'
         call cursor(a:lnum, 1)
         let mlnum = searchpair('\c\<try\>', '', '\c\<\%(except\|finally\)\>',
-                    \ 'bW', s:isCursorNonCodeExpr)
+                    \ 'bW', g:pashgb#isCursorNonCodeExpr)
         if mlnum > 0
             "echom a:lnum . ': #7a: exc/fin indented to matching try @' . mlnum
             return indent(mlnum)
