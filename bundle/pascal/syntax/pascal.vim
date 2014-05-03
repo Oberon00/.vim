@@ -27,15 +27,28 @@ syn sync lines=250
 syn keyword pascalBoolean	true false
 syn keyword pascalConditional	if else then
 syn keyword pascalConstant	nil maxint
-syn keyword pascalLabel		case goto label
+syn keyword pascalLabel         goto label
 syn keyword pascalOperator	and div downto in mod not of or packed with
-syn keyword pascalRepeat	do for repeat while to until
-syn keyword pascalStatement	procedure function
-syn keyword pascalStatement	program begin end const var type
+syn keyword pascalRepeat	do for while to
+syn keyword pascalStatement	procedure function program unit
+syn keyword pascalStatement	const var type
 syn keyword pascalStruct	record
 syn keyword pascalType		array boolean char integer file pointer real set
 syn keyword pascalType		string text variant
+syn match pascalEndError "end"
+syn match pascalStatement "end\."
 
+syn region pascalBlock matchgroup=pascalStatement start="case" end="end" contains=TOP,pascalEndError transparent fold extend
+syn region pascalBlock matchgroup=pascalRepeat start="repeat" end="until" transparent fold extend
+syn region pascalBlock matchgroup=pascalStatement start="begin" end="end" contains=TOP,pascalEndError transparent fold extend
+syn region pascalBlock matchgroup=pascalStruct start="record" end="end" contains=TOP,pascalEndError transparent fold extend
+if exists('pascal_delphi')
+  syn region pascalBlock matchgroup=pascalStruct start="class\|object" end="end" contains=TOP,pascalEndError transparent fold extend keepend
+  syn region pascalBlock matchgroup=pascalAccess start="private\|public\|published\|protected\|automated" end="end" containedin=pascalBlock
+endif
+
+syn region pascalBlock matchgroup=pascalStatement start="interface" end="\zeimplementation" transparent fold
+syn region pascalBlock matchgroup=pascalStatement start="implementation" end="\%$" transparent fold
 
     " 20011222az: Added new items.
 syn keyword pascalTodo contained	TODO FIXME XXX DEBUG NOTE
@@ -47,10 +60,9 @@ if exists("pascal_space_errors")
         syn match pascalSpaceError "\s\+$"
     endif
     if !exists("pascal_no_tab_space_error")
-        syn match pascalSpaceError " \+\t"me=e-1
+        syn match pascalSpaceError " \+\t"
     endif
 endif
-
 
 
 " String
@@ -150,11 +162,10 @@ endif
 
 if !exists("pascal_traditional")
 
-  syn keyword pascalStatement	constructor destructor implementation inherited
-  syn keyword pascalStatement	interface unit uses
+  syn keyword pascalStatement	constructor destructor inherited
+  syn keyword pascalStatement	uses
   syn keyword pascalModifier	absolute assembler external far forward inline
   syn keyword pascalModifier	interrupt near virtual 
-  syn keyword pascalAcces	private public 
   syn keyword pascalStruct	object 
   syn keyword pascalOperator	shl shr xor
 
@@ -170,16 +181,18 @@ if !exists("pascal_traditional")
   syn keyword pascalType	PChar
 
 
-  if !exists ("pascal_fpc")
+  if !exists ("pascal_fpc") || exists('pascal_delphi')
     syn keyword pascalPredefined	Result
   endif
 
-  if exists("pascal_fpc")
+  if exists("pascal_fpc") || exists('pascal_delphi')
     syn region pascalComment        start="//" end="$" contains=pascalTodo,pascalSpaceError
-    syn keyword pascalStatement	fail otherwise operator
-    syn keyword pascalDirective	popstack
-    syn keyword pascalPredefined self
-    syn keyword pascalType	ShortString AnsiString WideString
+    if exists('pascal_fpc')
+      syn keyword pascalStatement	fail otherwise operator
+      syn keyword pascalDirective	popstack
+      syn keyword pascalPredefined self
+      syn keyword pascalType	ShortString AnsiString WideString
+    endif
   endif
 
   if exists("pascal_gpc")
@@ -208,7 +221,6 @@ if !exists("pascal_traditional")
     syn keyword pascalModifier	override export dynamic name message
     syn keyword pascalModifier	dispid index stored default nodefault readonly
     syn keyword pascalModifier	writeonly implements overload requires resident
-    syn keyword pascalAcces	protected published automated
     syn keyword pascalDirective	register pascal cvar cdecl stdcall safecall
     syn keyword pascalOperator	as is
   endif
@@ -328,7 +340,6 @@ if !exists("pascal_traditional")
       syn keyword pascalType     TextSettingsType ViewPortType
     endif
   endif
-
 endif
 
 " Define the default highlighting.
@@ -342,13 +353,14 @@ if version >= 508 || !exists("did_pascal_syn_inits")
     command -nargs=+ HiLink hi def link <args>
   endif
 
-  HiLink pascalAcces		pascalStatement
+  HiLink pascalAccess		pascalStatement
   HiLink pascalBoolean		Boolean
   HiLink pascalCommentStart     pascalComment
   HiLink pascalBraceComment     pascalComment
   HiLink pascalComment		Comment
   HiLink pascalCommentStartError pascalError
   HiLink pascalCommentEndError  pascalError
+  HiLink pascalEndError         pascalError
   HiLink pascalConditional	Conditional
   HiLink pascalConstant		Constant
   HiLink pascalDelimiter	Identifier
