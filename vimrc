@@ -42,7 +42,6 @@ set backspace=indent,eol,start
 
 function! s:SetPascalOptions()
     setlocal shiftwidth=2 softtabstop=2 textwidth=82
-    setlocal foldmethod=syntax
     compiler fpcD
 endfunction
 
@@ -151,6 +150,9 @@ set clipboard=unnamed
 " ---------------------------------------------------------------------------
 " Other settings: {{{
 
+set foldmethod=syntax
+set foldlevelstart=99 " All folds open by default.
+
 " chdir to file directory:
 function! s:EnterDir()
     if expand('%:p:h') !~? '\v/tmp|\\\\' && expand('%:t') != ''
@@ -247,7 +249,6 @@ exec 'set directory='. s:vimdir . '/swap'
 if exists("&undodir")
     exec 'set undodir='. s:vimdir . '/undo'
 endif
-" }}}
 
 " <C-]> is untypeable on a german keyboard.
 nnoremap <CR> <C-]>
@@ -255,3 +256,6 @@ nnoremap <CR> <C-]>
 let g:ipy_perform_mappings = 0
 let g:ipy_completefunc = 0
 
+" }}}
+
+" vim: foldmethod=marker
