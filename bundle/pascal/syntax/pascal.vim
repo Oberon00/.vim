@@ -23,6 +23,7 @@ endif
 
 syn case ignore
 syn sync lines=250
+syn sync linebreaks=1
 
 syn keyword pascalBoolean	true false
 syn keyword pascalConditional	if else then
@@ -32,23 +33,24 @@ syn keyword pascalOperator	and div downto in mod not of or packed with
 syn keyword pascalRepeat	do for while to
 syn keyword pascalStatement	procedure function program unit
 syn keyword pascalStatement	const var type
-syn keyword pascalStruct	record
 syn keyword pascalType		array boolean char integer file pointer real set
 syn keyword pascalType		string text variant
-syn match pascalEndError "end"
-syn match pascalStatement "end\."
+syn match pascalEndError "\<end\>"
+syn match pascalStatement "\<end\."
 
-syn region pascalBlock matchgroup=pascalStatement start="case" end="end" contains=TOP,pascalEndError transparent fold extend
-syn region pascalBlock matchgroup=pascalRepeat start="repeat" end="until" transparent fold extend
-syn region pascalBlock matchgroup=pascalStatement start="begin" end="end" contains=TOP,pascalEndError transparent fold extend
-syn region pascalBlock matchgroup=pascalStruct start="record" end="end" contains=TOP,pascalEndError transparent fold extend
+syn region pascalBlock matchgroup=pascalStatement start="\<case\>" end="\<end\>" contains=TOP,pascalEndError transparent fold
+syn region pascalBlock matchgroup=pascalRepeat start="\<repeat\>" end="\<until\>" contains=TOP transparent fold
+syn region pascalBlock matchgroup=pascalStatement start="\<begin\>" end="\<end\>" contains=TOP,pascalEndError transparent fold
+syn region pascalBlock matchgroup=pascalStruct start="\<record\>" end="\<end\>" contains=TOP,pascalEndError transparent fold
 if exists('pascal_delphi')
-  syn region pascalBlock matchgroup=pascalStruct start="class\|object" end="end" contains=TOP,pascalEndError transparent fold extend keepend
-  syn region pascalBlock matchgroup=pascalAccess start="private\|public\|published\|protected\|automated" end="end" containedin=pascalBlock
+  syn region pascalAccessBlock matchgroup=pascalAccess start="\v<%(private|public|published|protected|automated)>" end="\v^\ze.*<%(end|private|public|published|protected|automated)>" transparent fold contains=TOP
+  syn region pascalBlock matchgroup=pascalStruct start="\<\%(class\|object\)\>" end="\<end\>" contains=TOP,pascalEndError transparent fold
+  syn region pascalBlock matchgroup=pascalException start="\<try\>" end="\v^\ze.*<%(except|finally)>" transparent fold
+  syn region pascalBlock matchgroup=pascalException start="\<\%(except\|finally\)\>" end="\<end\>" transparent fold
 endif
 
-syn region pascalBlock matchgroup=pascalStatement start="interface" end="\zeimplementation" transparent fold
-syn region pascalBlock matchgroup=pascalStatement start="implementation" end="\%$" transparent fold
+syn region pascalBlock matchgroup=pascalStatement start="\<interface\>" end="^\ze.*\<implementation\>" transparent fold
+syn region pascalBlock matchgroup=pascalStatement start="\<implementation\>" end="\%$" transparent fold
 
     " 20011222az: Added new items.
 syn keyword pascalTodo contained	TODO FIXME XXX DEBUG NOTE
@@ -166,7 +168,6 @@ if !exists("pascal_traditional")
   syn keyword pascalStatement	uses
   syn keyword pascalModifier	absolute assembler external far forward inline
   syn keyword pascalModifier	interrupt near virtual 
-  syn keyword pascalStruct	object 
   syn keyword pascalOperator	shl shr xor
 
   syn region pascalPreProc	start="(\*\$"  end="\*)" contains=pascalTodo
@@ -179,11 +180,6 @@ if !exists("pascal_traditional")
   syn keyword pascalType	Cardinal LongWord
   syn keyword pascalType	Single Double Extended Comp
   syn keyword pascalType	PChar
-
-
-  if !exists ("pascal_fpc") || exists('pascal_delphi')
-    syn keyword pascalPredefined	Result
-  endif
 
   if exists("pascal_fpc") || exists('pascal_delphi')
     syn region pascalComment        start="//" end="$" contains=pascalTodo,pascalSpaceError
@@ -202,6 +198,7 @@ if !exists("pascal_traditional")
   endif
 
   if exists("pascal_delphi")
+    syn keyword pascalPredefined	Result
     syn region pascalComment	start="//"  end="$" contains=pascalTodo,pascalSpaceError
     syn keyword pascalType	SmallInt Int64
     syn keyword pascalType	Real48 Currency
@@ -210,8 +207,8 @@ if !exists("pascal_traditional")
     syn keyword pascalType	PAnsiChar PWideChar
     syn match  pascalFloat	"-\=\<\d\+\.\d\+[dD]-\=\d\+\>"
     syn match  pascalStringEscape	contained "#[12][0-9]\=[0-9]\="
-    syn keyword pascalStruct	class dispinterface
-    syn keyword pascalException	try except raise at on finally
+    syn keyword pascalStruct	dispinterface
+    syn keyword pascalException	raise at on
     syn keyword pascalStatement	out
     syn keyword pascalStatement	library package 
     syn keyword pascalStatement	initialization finalization uses exports
