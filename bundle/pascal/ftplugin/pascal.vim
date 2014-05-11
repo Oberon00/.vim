@@ -1,7 +1,7 @@
-if exists('did_ft_plugin') || &cp || version < 700
+if exists('b:did_ft_plugin') || &cp || version < 700
     finish
 endif
-let did_ft_plugin = 1
+let b:did_ft_plugin = 1
 let b:undo_ftplugin = ''
 
 " {{{ Matchit configuration:
