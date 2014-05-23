@@ -1,16 +1,22 @@
 # IF-THEN-ELSE {{{1 #
 
 snippet "(?i)if" "IF-THEN block statement" r
-IF ${1:cond} THEN BEGIN
+IF $1 THEN BEGIN
 	${0:${VISUAL}}
 END; (* IF *)
 endsnippet
 
 snippet "(?i)ife" "IF-THEN-ELSE block statement" r
-IF ${1:cond} THEN BEGIN
+IF $1} THEN BEGIN
 	$2
 END ELSE BEGIN
 	$2
+END; (* IF *)
+endsnippet
+
+snippet "(?i)eif" "ELSE-IF-THEN block statement" r
+ELSE IF $1 THEN BEGIN
+	${0:${VISUAL}}
 END; (* IF *)
 endsnippet
 
@@ -54,8 +60,8 @@ FOR ${1:i} := ${2:High(${3:arr})} DOWNTO ${4:Low($3)} DO BEGIN
 END; (* FOR $1 *)
 endsnippet
 
-snippet "(?i)while" "WHILE-DO block statement" br
-WHILE ${1:cond} DO BEGIN
+snippet "(?i)wh(ile)?" "WHILE-DO block statement" br
+WHILE $1 DO BEGIN
 	${0:${VISUAL}}
 END; (* WHILE *)
 endsnippet
