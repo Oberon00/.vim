@@ -60,7 +60,10 @@ augroup vrcFiletypes
     autocmd FileType tex,plaintex call <SID>SetTexOptions()
     autocmd FileType snippets setlocal noexpandtab tabstop=4
     autocmd FileType vim setlocal foldmethod=marker foldlevel=0
+    autocmd FileType python setlocal foldmethod=indent
 augroup END
+
+set cinoptions+=g0 " Do not indent public/private/protected
 
 runtime macros/matchit.vim
 
@@ -207,8 +210,12 @@ set foldlevelstart=99 " All folds open by default.
 
 " chdir to file directory:
 function! s:EnterDir()
-    if expand('%:p:h') !~? '\v/tmp|\\\\' && expand('%:t') != ''
-        lcd %:p:h
+    if expand('%:p:h') !~? '\v/tmp|\\\\|\:\:' && expand('%:t') != ''
+        try
+            lcd %:p:h
+        catch /E344/
+            " Ignore
+        endtry
     endif
 endfunc
 
@@ -307,6 +314,8 @@ nnoremap <CR> <C-]>
 
 let g:ipy_perform_mappings = 0
 let g:ipy_completefunc = 0
+
+set browsedir=buffer
 
 " }}}
 
