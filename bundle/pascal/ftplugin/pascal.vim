@@ -30,7 +30,11 @@ endif
 " Function/procedure keyword followed (optionally) by empty lines or lines
 " with more indent than the current one containing the keyword, followed
 " by a begin (with any indent).
-let s:secPat  = '\v\c%(^(\s*)%(function|procedure)>.+\n'
+let s:secPat  = '\v\c%(^(\s*)%(function|procedure'
+if exists('pascal_delphi')
+    let s:secPat .= '|constructor|destructor'
+endif
+let s:secPat .= ')>.+\n'
 let s:secPat .= '%(^\1\s+.*\n|\n)*^\s*begin)'
 
 let s:secPat .= '|%(^begin>)|<record>'
@@ -114,7 +118,7 @@ let b:undo_ftplugin .= 'unmap ]]|unmap [[|unmap ][|unmap []|'
 
 " Comments & formatting {{{
 
-setlocal comments=s1:\(*,mb:*,ex:*\)
+setlocal comments=s1:(*,mb:*,ex:*)
 if exists("pascal_fpc") || exists('pascal_delphi')
     setlocal comments+=://
     setlocal commentstring=//%s
