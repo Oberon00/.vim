@@ -5,7 +5,7 @@
 
 function! pashgb#IsNonCode(lnum, col)
     return synIDattr(synID(a:lnum, a:col, 0), 'name')
-                \ =~? '\%(Comment\|Todo\|PreProc\|String\)$'
+                \ =~? '\%(Comment\|Todo\|PreProc\|String\)'
 endfunction
 
 let g:pashgb#isCursorNonCodeExpr = 'pashgb#IsNonCode(line("."), col("."))'
