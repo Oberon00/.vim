@@ -111,30 +111,63 @@ snippet "(?i)pro(c(edure)?)?" "Procedure definiton" br
 PROCEDURE ${1:procname}${2:($3)};
 BEGIN
 	${0:${VISUAL}}
-END; (* $1 *)
+END; (* ${1/([^(])*/\1} *)
+endsnippet
+
+snippet "(?i)Init|constr(uctor)?" "Constructor definiton" br
+CONSTRUCTOR ${1:TClass}.${2:Init}${3:($4)};
+BEGIN
+	${0:${VISUAL}}
+END; (* ${1/([^(])*/$1/} *)
+endsnippet
+
+snippet "(?i)Done|destr(uctor)?" "Destructor definiton" br
+DESTRUCTOR ${1:TClass}.${2:Done}${3:($4)};
+BEGIN
+	${0:${VISUAL}}
+END; (* ${1/([^(])*/$1/} *)
+endsnippet
+
+snippet "(?i)pro(c(edure)?)?" "Procedure definiton" br
+PROCEDURE ${1:procname}${2:($3)};
+BEGIN
+	${0:${VISUAL}}
+END; (* ${1/([^(])*/$1/} *)
 endsnippet
 
 global !p
 import re
-_forward_pat = re.compile(ur'\s*forward\s*;\s*\Z', re.I)
+def constr_destr_impl_headr():
+	s = _forward_pat.sub('', match.group(3))
+	return match.group(2) + (s if s.endswith(';') else s + ';')
+
+_forward_pat = re.compile(ur'\s*\b(?:forward|virtual)\b\s*;\s*\Z', re.I)
 def fn_proc_impl_head():
-	s = _forward_pat.sub('', match.group(0), 1)
+	s = _forward_pat.sub('', match.group(0))
 	return s if s.endswith(';') else s + ';'
 endglobal
 
-snippet "(?i)function\s+([A-Za-z_]\w*).*;" "Function implementation" br
+snippet "(?i)function\s+([A-Za-z_][.\w]*).*;" "Function implementation" br
 `!p snip.rv = fn_proc_impl_head()`
 BEGIN
 	${0:`!p snip.rv = match.group(1)` := $1}
 END; (* `!p snip.rv = match.group(1)` *)
 endsnippet
 
-snippet "(?i)procedure\s+([A-Za-z_]\w*).*;" "Procedure implementation" br
+snippet "(?i)procedure\s+([A-Za-z_][.\w]*).*;" "Procedure implementation" br
 `!p snip.rv = fn_proc_impl_head()`
 BEGIN
 	$0
 END; (* `!p snip.rv = match.group(1)` *)
 endsnippet
+
+snippet "(?i)(constructor|destructor)\s+([A-Za-z_][.\w]*)(.*);" "Constructor/destructor implementation" br
+`!p snip.rv = match.group(1)` ${1:TObj}.`!p snip.rv = constr_destr_impl_headr()`
+BEGIN
+	$0
+END; (* $1.`!p snip.rv = match.group(2)` *)
+endsnippet
+
 
 snippet "(?i)fund" "Function declaration" br
 FUNCTION ${1:funcname}${2:($3)}: ${4:TRes};
@@ -144,26 +177,54 @@ snippet "(?i)prod" "Procedure declaration" br
 PROCEDURE ${1:procname}${2:($3)};
 endsnippet
 
+snippet "(?i)consd" "Constructor declaration" br
+CONSTRUCTOR ${1:Init}${2:($3)};
+endsnippet
+
+snippet "(?i)destd" "Destructor declaration" br
+DESTRUCTOR ${1:Done}${2:($3)};
+endsnippet
 # 1}}} #
 
 
-# Types (records) {{{1 #
+# Types (records, objects) {{{1 #
 
-snippet "(?i)record" "RECORD definition body" r
-RECORD
+snippet "(?i)([a-zA-Z_]\w+)\s*=\s*rec(?:ord)?" "RECORD definition body" r
+`!p snip.rv = match.group(1)` = RECORD
 	$0
-END; (* ${1:TRec} *)
+END; (* `!p snip.rv = match.group(1)` *)
 
 endsnippet
 
-priority 1
-snippet "(?i)record" "RECORD definition" br
+snippet "(?i)rec(ord)?" "RECORD definition" br
 ${1:TRec} = RECORD
 	$0
 END; (* $1 *)
 endsnippet
-priority 0
 
+snippet "(?i)([a-zA-Z_]\w+)\s*=\s*obj(?:ect)?" "OBJECT definition body" br
+${2:`!p snip.rv = re.sub('^T?', 'P', match.group(1))` = ^`!p snip.rv = match.group(1)`;
+}`!p snip.rv = match.group(1)` = OBJECT
+	PUBLIC
+		CONSTRUCTOR Init$3;
+		${4:DESTRUCTOR Done;
+		$5}
+	PRIVATE
+		$6
+END; (* `!p snip.rv = match.group(1)` *)
+endsnippet
+
+snippet "(?i)obj(ect)?" "OBJECT definition" br
+${2:${1/^T?/P/}} = ^$1;
+}${1:TObj} = OBJECT
+	PUBLIC
+		CONSTRUCTOR Init$3;
+		${4:DESTRUCTOR Done;
+		$5}
+	PRIVATE
+		$6
+END; (* $1 *)
+endsnippet
 # 1}}} #
 
 
