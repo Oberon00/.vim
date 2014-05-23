@@ -44,6 +44,8 @@ function! s:SetPascalOptions()
     setlocal shiftwidth=2 softtabstop=2 textwidth=82
     compiler fpcD
 endfunction
+let g:pascal_delphi = 1
+let g:pascal_fpc_mode = 'tp'
 
 function! s:SetTexOptions()
     setlocal shiftwidth=2
