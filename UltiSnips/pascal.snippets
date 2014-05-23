@@ -117,28 +117,21 @@ snippet "(?i)pro(c(edure)?)?" "Procedure definiton" br
 PROCEDURE ${1:procname}${2:($3)};
 BEGIN
 	${0:${VISUAL}}
-END; (* ${1/([^(])*/\1} *)
+END; (* ${1/([^(]*)/$1/} *)
 endsnippet
 
 snippet "(?i)Init|constr(uctor)?" "Constructor definiton" br
 CONSTRUCTOR ${1:TClass}.${2:Init}${3:($4)};
 BEGIN
 	${0:${VISUAL}}
-END; (* ${1/([^(])*/$1/} *)
+END; (* ${1/([^(]*)/$1/} *)
 endsnippet
 
 snippet "(?i)Done|destr(uctor)?" "Destructor definiton" br
 DESTRUCTOR ${1:TClass}.${2:Done}${3:($4)};
 BEGIN
 	${0:${VISUAL}}
-END; (* ${1/([^(])*/$1/} *)
-endsnippet
-
-snippet "(?i)pro(c(edure)?)?" "Procedure definiton" br
-PROCEDURE ${1:procname}${2:($3)};
-BEGIN
-	${0:${VISUAL}}
-END; (* ${1/([^(])*/$1/} *)
+END; (* ${1/([^(]*)/$1/} *)
 endsnippet
 
 global !p
