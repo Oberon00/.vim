@@ -19,7 +19,7 @@ setlocal indentkeys+=0=~interface,0=~implementation,=~class,0=~unit
 setlocal indentkeys+=0=~program,=~function,=~procedure
 setlocal indentkeys+=0=~private,0=~protected,0=~public,0=~published
 setlocal indentkeys+=0=~else
-if exists('pascal_delphi')
+if exists('g:pascal_delphi')
     setlocal indentkeys+=0=~except,0=~finally
 endif
 
@@ -105,6 +105,10 @@ function! s:FullStripLine(lnum)
     endwhile
 endfunction
 
+function! PasFullStripLine(lnum)
+    return s:FullStripLine(a:lnum)
+endfunction
+
 function! s:StrippedIdxToCol(idx, offs)
     for [begIdx, offset] in a:offs
         if begIdx <= a:idx
@@ -132,15 +136,19 @@ function! s:SearchParPair(stopline)
 endfunction
 
 let s:secStartPat = '\c^\%(const\|var\|type\|uses'
-if exists('pascal_delphi')
-    let s:secStartPat .= '\|public\|protected\|private\|published'
+if exists('g:pascal_delphi')
+    let s:secStartPat .= '\|private\|public\|protected\|published'
 endif
-let s:secOrFuncStartPat = s:secStartPat . '\|function\|procedure\)\>'
+let s:secOrFuncStartPat  = s:secStartPat . '\|function\|procedure'
+if exists('g:pascal_delphi')
+    let s:secOrFuncStartPat .= '\|constructor\|destructor'
+endif
+let s:secOrFuncStartPat .= '\)\>'
 let s:secStartPat .= '\)\>'
 
 
 let s:beginLikePat = '\c\<\%(record\|begin\|of'
-if exists('pascal_delphi')
+if exists('g:pascal_delphi')
     let s:beginLikePat .= '\|class\|object\|except\|finally'
 endif
 let s:beginLikePat .= '\)' " Users have to append $/\>.
@@ -187,7 +195,7 @@ endfunction
 function! s:IsStrIncompleteStmt(s)
     return a:s !~? s:beginLikePat . '$' && a:s !~? s:secStartPat
                 \ && a:s !~? s:chapStartPat && a:s !~? '\<repeat$\|;$\|:$'
-                \ && (!exists('pascal_delphi') || a:s !~? '\<try$')
+                \ && (!exists('g:pascal_delphi') || a:s !~? '\<try$')
 endfunction
 
 function! GetPascalIndent(lnum)
@@ -263,7 +271,7 @@ function! GetPascalIndent(lnum)
         return 0
     endif
 
-    if exists('pascal_delphi') && lstr =~? '^\%(except\|finally\)\>'
+    if exists('g:pascal_delphi') && lstr =~? '^\%(except\|finally\)\>'
         call cursor(a:lnum, 1)
         let mlnum = searchpair('\c\<try\>', '', '\c\<\%(except\|finally\)\>',
                     \ 'bW', g:pashgb#isCursorNonCodeExpr)
@@ -276,7 +284,7 @@ function! GetPascalIndent(lnum)
     endif
 
     if plstr =~? s:beginLikePat . '$' || plstr =~? '\<repeat$'
-                \ || exists('pascal_delphi') && plstr =~? '\<try$'
+                \ || exists('g:pascal_delphi') && plstr =~? '\<try$'
         let [parLNum, parDiff] = s:FindOpeningLine(plnum)
         "echom a:lnum . ': #8: line following begin-like (parLNum: '
         "            \ . parLNum . ')'
@@ -311,7 +319,13 @@ function! GetPascalIndent(lnum)
                 "echom a:lnum . ': #9c: begin after section start'
                 return dedent
             endif
-            "echom a:lnum . ': #9d: Consecutive section starts'
+            let visSecPat = '\v\c<%(public|private|protected|published)>'
+            if exists('g:pascal_delphi') &&
+                        \ lstr !~? visSecPat && plstr =~? visSecPat
+                "echom a:lnum . ': #9d: Section in visibility section.'
+                return indent(plnum) + &shiftwidth
+            endif
+            "echom a:lnum . ': #9e: Consecutive section starts'
             return indent(plnum)
         endif
     endif
