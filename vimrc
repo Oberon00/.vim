@@ -48,8 +48,7 @@ let g:pascal_delphi = 1
 let g:pascal_fpc_mode = 'tp'
 
 function! s:SetTexOptions()
-    setlocal shiftwidth=2
-    setlocal softtabstop=2
+    setlocal shiftwidth=2 softtabstop=2 textwidth=82
     nnoremap <buffer> <F6> :<C-U>w<CR>:<C-U>Latexmk<CR>
     nnoremap <buffer> <F5> :<C-U>LatexView<CR>
 endfunction
@@ -229,7 +228,7 @@ augroup END
 
 " Execute executable generated from file
 if has('win32')
-    nnoremap <F5> :<C-U>!start cmd /c "%:r.exe" & pause<CR>
+    nnoremap <F5> :<C-U>silent !start cmd /c "%:r.exe" & pause<CR>
 else
     nnoremap <F5> :<C-U>!'%:r'<CR>
 endif
