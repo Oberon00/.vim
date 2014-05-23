@@ -156,17 +156,21 @@ syntax on  " Enable syntax highlighting
 
 " Color scheme:
 function! s:SetDarkBackground()
-    let g:gruvbox_contrast = 'soft'
-    set background=dark  " Use default dark color theme by default
+    set background=dark
+    hi! link pascalOperator Keyword
+    hi! link luaOperator Keyword
+    silent! colorscheme gruvbox
 endfunction
 
 function! s:SetLightBackground()
-    let g:gruvbox_contrast = 'hard'
     set background=light
+    hi! link pascalOperator Operator
+    hi! link luaOperator Operator
+    silent! colorscheme ironman
 endfunction
 
 function! s:ToggleBackground()
-    if &background ==# 'light'
+    if &background ==? 'light'
         call s:SetDarkBackground()
     else
         call s:SetLightBackground()
@@ -178,9 +182,7 @@ call s:SetDarkBackground()
 let s:use_italics = has('gui_running') || $TERM != 'xterm'
 let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
-hi! link pascalOperator Keyword
-hi! link luaOperator Keyword
-silent! colorscheme gruvbox
+let g:gruvbox_contrast = 'soft'
 
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
 set sidescrolloff=5  "       ... 5 columns left/right ...
