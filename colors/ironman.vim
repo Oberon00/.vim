@@ -107,7 +107,11 @@ hi! link Typedef	Type
 hi! link SpecialChar	Special
 hi! link Debug		Special
 
-" HTML
+hi! link diffAdded      DiffAdd
+hi! link diffRemoved    DiffDelete
+hi! link diffChanged    DiffChange
+
+" HTML {{{1
 hi htmlLink                  gui=UNDERLINE guifg=#0000ff guibg=NONE
 hi htmlBold                  gui=BOLD
 hi htmlBoldItalic            gui=BOLD,ITALIC

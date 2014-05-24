@@ -156,6 +156,7 @@ syntax on  " Enable syntax highlighting
 " Color scheme:
 function! s:SetDarkBackground()
     set background=dark
+    let g:gruvbox_contrast = 'soft'
     hi! link pascalOperator Keyword
     hi! link luaOperator Keyword
     silent! colorscheme gruvbox
@@ -163,9 +164,16 @@ endfunction
 
 function! s:SetLightBackground()
     set background=light
-    hi! link pascalOperator Operator
-    hi! link luaOperator Operator
-    silent! colorscheme ironman
+    if has('gui_running') " Sadly, ironman is only available for gVim
+        hi! link pascalOperator Operator
+        hi! link luaOperator Operator
+        silent! colorscheme ironman
+    else
+        let g:gruvbox_contrast = 'hard'
+        hi! link pascalOperator Keyword
+        hi! link luaOperator Keyword
+        silent! colorscheme gruvbox
+    endif
 endfunction
 
 function! s:ToggleBackground()
