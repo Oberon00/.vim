@@ -202,6 +202,32 @@ set statusline+=%(\ %q%)  " Location/Quickfix window?
 set statusline+=%(\ [%{VrcFileInfo()}]%)  " File info
 
 
+" Sessions {{{1
+function! s:MkSession()
+    if v:this_session ==# ''
+        if filewritable('Session.vsess')
+            echo 'Session.vsess already exists. Overwrite? (y/n)'
+            if nr2char(getchar()) ==? 'y'
+                mksession! Session.vsess
+                echo 'Session.vsess overwritten.'
+            else
+                echo 'Cancelled saving session.'
+            endif
+        else
+            mksession Session.vsess
+            echo 'Saved as new file Session.vsess.'
+        endif
+    else
+        exec 'mksession! ' . v:this_session
+        echo 'Saved ' . v:this_session . '.'
+    endif
+endfunction
+
+set sessionoptions-=options
+set sessionoptions+=resize,winpos
+set sessionoptions+=unix,slash
+nnoremap <silent> <F4> :call <SID>MkSession()<CR>
+
 " Other settings {{{1
 
 " chdir to file directory {{{
@@ -229,7 +255,6 @@ if has('win32')
 else
     nnoremap <F5> :<C-U>!'%:r'<CR>
 endif
-
 "}}}
 
 nnoremap <F6> :w<CR>:<C-U>make!<CR>:copen<CR><C-W>p
@@ -243,7 +268,8 @@ set browsedir=buffer
 set clipboard=unnamed
 set ignorecase smartcase
 set history=1000
-set foldmethod=syntax foldlevelstart=99
+" Use setglobal to not overwrite anything when vimrc is re-sourced.
+setglobal foldmethod=syntax foldlevelstart=99
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
 set sidescrolloff=5  "       ... 5 columns left/right ...
 
