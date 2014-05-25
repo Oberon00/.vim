@@ -69,6 +69,9 @@ set cinoptions+=g0 " Do not indent public/private/protected
 
 runtime macros/matchit.vim
 
+" Startify {{{2
+let g:startify_session_persistence = 1
+
 " Unite {{{2
 nnoremap <Leader>f :<C-U>Unite -start-insert file<CR>
 nnoremap <Leader>rf :<C-U>Unite -start-insert file_rec<CR>
@@ -205,17 +208,17 @@ set statusline+=%(\ [%{VrcFileInfo()}]%)  " File info
 " Sessions {{{1
 function! s:MkSession()
     if v:this_session ==# ''
-        if filewritable('Session.vsess')
-            echo 'Session.vsess already exists. Overwrite? (y/n)'
+        if filewritable('Session.vim')
+            echo 'Session.vim already exists. Overwrite? (y/n)'
             if nr2char(getchar()) ==? 'y'
-                mksession! Session.vsess
-                echo 'Session.vsess overwritten.'
+                mksession! Session.vim
+                echo 'Session.vim overwritten.'
             else
                 echo 'Cancelled saving session.'
             endif
         else
-            mksession Session.vsess
-            echo 'Saved as new file Session.vsess.'
+            mksession Session.vim
+            echo 'Saved as new file Session.vim.'
         endif
     else
         exec 'mksession! ' . v:this_session
