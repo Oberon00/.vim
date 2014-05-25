@@ -111,6 +111,12 @@ hi! link diffAdded      DiffAdd
 hi! link diffRemoved    DiffDelete
 hi! link diffChanged    DiffChange
 
+" vim-startify {{{1
+hi! link StartifyNumber Number
+hi! link StartifySection Title
+hi! link StartifyFile Identifier
+hi! link StartifySpecial Type
+
 " HTML {{{1
 hi htmlLink                  gui=UNDERLINE guifg=#0000ff guibg=NONE
 hi htmlBold                  gui=BOLD
