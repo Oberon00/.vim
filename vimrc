@@ -206,30 +206,10 @@ set statusline+=%(\ [%{VrcFileInfo()}]%)  " File info
 
 
 " Sessions {{{1
-function! s:MkSession()
-    if v:this_session ==# ''
-        if filewritable('Session.vim')
-            echo 'Session.vim already exists. Overwrite? (y/n)'
-            if nr2char(getchar()) ==? 'y'
-                mksession! Session.vim
-                echo 'Session.vim overwritten.'
-            else
-                echo 'Cancelled saving session.'
-            endif
-        else
-            mksession Session.vim
-            echo 'Saved as new file Session.vim.'
-        endif
-    else
-        exec 'mksession! ' . v:this_session
-        echo 'Saved ' . v:this_session . '.'
-    endif
-endfunction
-
 set sessionoptions-=options
 set sessionoptions+=resize,winpos
 set sessionoptions+=unix,slash
-nnoremap <silent> <F4> :call <SID>MkSession()<CR>
+nnoremap <silent> <F4> :exec 'SSave ' . fnamemodify(v:this_session, ':t')<CR>
 
 " Other settings {{{1
 
