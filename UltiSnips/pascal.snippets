@@ -124,23 +124,27 @@ snippet "(?i)Init|constr(uctor)?" "Constructor definiton" br
 CONSTRUCTOR ${1:TClass}.${2:Init}${3:($4)};
 BEGIN
 	${0:${VISUAL}}
-END; (* ${1/([^(]*)/$1/} *)
+END; (* $1.${2/([^(]*)/$1/} *)
 endsnippet
 
 snippet "(?i)Done|destr(uctor)?" "Destructor definiton" br
 DESTRUCTOR ${1:TClass}.${2:Done}${3:($4)};
 BEGIN
 	${0:${VISUAL}}
-END; (* ${1/([^(]*)/$1/} *)
+END; (* $1.${2/([^(]*)/$1/} *)
 endsnippet
 
 global !p
 import re
+
+_forward_pat = re.compile(ur'\s*(forward|virtual)\s*;\s*', re.I)
+
 def constr_destr_impl_headr():
+	print match.group(3)
 	s = _forward_pat.sub('', match.group(3))
+	print s
 	return match.group(2) + (s if s.endswith(';') else s + ';')
 
-_forward_pat = re.compile(ur'\s*\b(?:forward|virtual)\b\s*;\s*\Z', re.I)
 def fn_proc_impl_head():
 	s = _forward_pat.sub('', match.group(0))
 	return s if s.endswith(';') else s + ';'
@@ -160,7 +164,7 @@ BEGIN
 END; (* `!p snip.rv = match.group(1)` *)
 endsnippet
 
-snippet "(?i)(constructor|destructor)\s+([A-Za-z_][.\w]*)(.*);" "Constructor/destructor implementation" br
+snippet "(?i)(constructor|destructor)\s+([A-Za-z_].\w]*)(.*;)" "Constructor/destructor implementation" br
 `!p snip.rv = match.group(1)` ${1:TObj}.`!p snip.rv = constr_destr_impl_headr()`
 BEGIN
 	$0
