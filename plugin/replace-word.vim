@@ -7,6 +7,11 @@
 " Escape special characters in a string for exact matching.
 " This is useful to copying strings from the file to the search tool
 " Based on this - http://peterodding.com/code/vim/profile/autoload/xolox/escape.vim
+if exists('did_replacewordplugin') || &cp || version < 700
+    finish
+endif
+let did_replacewordplugin = 1
+
 function! s:EscapeString (string)
   let string=a:string
   " Escape only backslah, because we use \V (very no magic)
