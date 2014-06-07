@@ -129,9 +129,8 @@ set showmode
 set hlsearch   " Highlight search matches in whole window...
 nohlsearch     " ...but start w/o annoying leftover highlights
 set incsearch  " Start highlighting while typing search pattern
-" End search highlighting by pressing <Esc>:
-nnoremap <silent> <Esc> :nohlsearch<Return>
-
+" End search highlighting by pressing <Ctrl-L>:
+nnoremap <silent> <C-L> :nohlsearch<CR><C-L>
 " Color scheme(s) {{{2
 function! s:SetDarkBackground()
     set background=dark
