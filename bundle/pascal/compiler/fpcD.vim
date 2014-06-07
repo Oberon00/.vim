@@ -3,16 +3,20 @@
 " Last Change:  2014 February 26
 
 if exists("current_compiler")
-  finish
+    finish
 endif
 
 let current_compiler = "fpcD"
 
 if exists(":CompilerSet") != 2		" older Vim always used :setlocal
-  command -nargs=* CompilerSet setlocal <args>
+    command -nargs=* CompilerSet setlocal <args>
 endif
 
-CompilerSet makeprg=fpc\ -Criot\ -vewhnb\ -gclt\ -Sa\ %
+CompilerSet makeprg=fpc\ -Criot\ -vewhnb\ -glt\ -Sa\ %
+if has('win32')
+    CompilerSet makeprg+=\ -gc " Generate checks for pointers
+endif
+
 if exists('pascal_fpc_mode')
     execute 'CompilerSet makeprg+=\ -M' . pascal_fpc_mode
 elseif !exists('pascal_delphi')

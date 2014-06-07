@@ -163,11 +163,11 @@ function! s:ToggleBackground()
 endfunction
 noremap <silent> <F2> :<C-U>call <SID>ToggleBackground()<CR>
 
-call s:SetDarkBackground() " Start with the dark background
 let s:use_italics = has('gui_running') || $TERM != 'xterm'
 let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
-
+let g:gruvbox_italic = s:use_italics
+call s:SetDarkBackground() " Start with the dark background
 
 
 
@@ -211,7 +211,6 @@ set sessionoptions+=unix,slash
 nnoremap <silent> <F4> :exec 'SSave ' . fnamemodify(v:this_session, ':t')<CR>
 
 " Other settings {{{1
-
 " chdir to file directory {{{
 function! s:EnterDir()
     if expand('%:p:h') !~? '\v/tmp|\\\\|\:\:' && expand('%:t') != ''
@@ -235,7 +234,11 @@ nnoremap <Leader>cd :<C-U>lcd %:p:h<CR>:pwd<CR>
 if has('win32')
     nnoremap <F5> :<C-U>silent !start cmd /c "%:r.exe" & pause<CR>
 else
-    nnoremap <F5> :<C-U>!'%:r'<CR>
+    if executable('x-terminal-emulator')
+        nnoremap <F5> :<C-U>silent !x-terminal-emulator -e './%:r'<CR>
+    else
+        nnoremap <F5> :<C-U>!'./%:r'<CR>
+    endif
 endif
 "}}}
 
@@ -244,6 +247,13 @@ nnoremap <F6> :w<CR>:<C-U>make!<CR>:copen<CR><C-W>p
 if has('win32')
     nnoremap <silent><C-CR> :<C-U>exec 'silent !start ' . &shell<CR>
     nnoremap <silent><C-S-CR> :<C-U>silent !start explorer .<CR>
+else
+    if executable('x-terminal-emulator')
+        nnoremap <silent><C-CR> :<C-U>silent !x-terminal-emulator<CR>
+    endif
+    if executable('xdg-open')
+        nnoremap <silent><C-S-CR> :<C-U>silent !xdg-open . &<CR>
+    endif
 endif
 
 set browsedir=buffer
