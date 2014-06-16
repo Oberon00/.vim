@@ -101,7 +101,7 @@ endif
 " ipython {{{2
 let g:ipy_perform_mappings = 0
 let g:ipy_completefunc = 0
-" Visual settings: {{{1
+" Visual settings {{{1
 
 if has('gui_running')
     set guioptions-=m  " Remove menu bar.
@@ -125,6 +125,8 @@ set completeopt-=preview
 set wildmenu  " Display possible commandline completions.
 set showcmd  " Show normal mode commands in bottom line
 set showmode
+
+set list listchars=trail:·,nbsp:•,tab:►→,extends:…,precedes:…
 
 set hlsearch   " Highlight search matches in whole window...
 nohlsearch     " ...but start w/o annoying leftover highlights
@@ -244,6 +246,7 @@ endif
 
 nnoremap <F6> :w<CR>:<C-U>make!<CR>:copen<CR><C-W>p
 
+""" Open command window/explorer here {{{
 if has('win32')
     nnoremap <silent><C-CR> :<C-U>exec 'silent !start ' . &shell<CR>
     nnoremap <silent><C-S-CR> :<C-U>silent !start explorer .<CR>
@@ -255,6 +258,7 @@ else
         nnoremap <silent><C-S-CR> :<C-U>silent !xdg-open . &<CR>
     endif
 endif
+" }}}
 
 set browsedir=buffer
 set clipboard=unnamed
