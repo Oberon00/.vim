@@ -72,11 +72,6 @@ runtime macros/matchit.vim
 " Startify {{{2
 let g:startify_session_persistence = 1
 
-" Unite {{{2
-nnoremap <Leader>f :<C-U>Unite -start-insert file<CR>
-nnoremap <Leader>rf :<C-U>Unite -start-insert file_rec<CR>
-nnoremap <Leader>b :<C-U>Unite buffer<CR>
-nnoremap <Leader>l :<C-U>Unite -start-insert -no-split line<CR>
 
 " LaTeXBox {{{2
 if !has('win32')
