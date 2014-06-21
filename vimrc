@@ -225,6 +225,40 @@ set sessionoptions+=resize,winpos
 set sessionoptions+=unix,slash
 nnoremap <silent> <F4> :exec 'SSave ' . fnamemodify(v:this_session, ':t')<CR>
 
+
+" Foldtext {{{1
+
+let s:foldfill = matchstr(&fillchars, 'fold:\zs.')
+if !strlen(s:foldfill)
+    let s:foldfill = '-'
+endif
+let s:metacol = 80
+
+function! VrcGetFoldText()
+    let line = getline(v:foldstart)
+    let foldstartmarker = escape(matchstr(&foldmarker, '[^,]\+'), '\')
+    let comment = escape(matchstr(&commentstring, '[^%]\+'), '\')
+    let removepat = '\V/*\|*/\|' . foldstartmarker . '\d\?\|' . comment
+    let line = '+' . v:folddashes . substitute(line, removepat, '', 'g')
+    let meta = ' (' . ((v:foldend - v:foldstart) + 1) . ' lines)'
+    let occupiedw = strwidth(line) + strwidth(meta)
+    if winwidth(0) > s:metacol
+        let fill1n = (s:metacol - occupiedw) / strwidth(s:foldfill)
+        let fill1  = repeat(s:foldfill, fill1n)
+        let occupiedw += strwidth(fill1) + 1
+        let fill2n = (winwidth(0) - occupiedw) / strwidth(s:foldfill)
+        let fill2  = repeat(s:foldfill, fill2n)
+        return line . fill1 . meta . ' ' . fill2
+    endif
+    let filln = (winwidth(0) - occupiedw) / strwidth(s:foldfill)
+    let fill = repeat(s:foldfill, filln)
+    return line . fill  . meta
+endfunction
+
+set foldtext=VrcGetFoldText()
+
+
+
 " Other settings {{{1
 " chdir to file directory {{{
 function! s:EnterDir()
