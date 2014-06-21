@@ -65,9 +65,15 @@ augroup END
 set cinoptions+=g0 " Do not indent public/private/protected
 
 
+
 " Plugins {{{1
 
 runtime macros/matchit.vim
+
+" CtrlP {{{2
+nnoremap <leader>b  :CtrlPBuffer<CR>
+nnoremap <leader>pm :CtrlPMRU<CR>
+nnoremap <leader>l :CtrlPLine<CR>
 
 " Startify {{{2
 let g:startify_session_persistence = 1
