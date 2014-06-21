@@ -15,6 +15,8 @@ set mouse=a   " Enable mouse in all modes.
 
 "set debug+=msg
 
+
+
 " Encoding and tabs {{{1
 
 set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
@@ -27,6 +29,8 @@ set shiftwidth=4
 set softtabstop=4
 set expandtab
 
+
+
 " Pathogen {{{1
 let g:pathogen_disabled = []
 if has('win32')
@@ -36,6 +40,7 @@ if has('win32')
     call add(g:pathogen_disabled, 'vim-ipython')
 endif
 call pathogen#infect()
+
 
 
 " Filetype-specific settings {{{1
@@ -102,6 +107,9 @@ endif
 " ipython {{{2
 let g:ipy_perform_mappings = 0
 let g:ipy_completefunc = 0
+
+
+
 " Visual settings {{{1
 
 if has('gui_running')
@@ -127,8 +135,12 @@ set wildmenu  " Display possible commandline completions.
 set showcmd  " Show normal mode commands in bottom line
 set showmode
 
-set list listchars=trail:·,nbsp:•,tab:►→,extends:…,precedes:…
-
+set list listchars=trail:·,tab:►→
+if has('win32') && !has('gui_running')
+    set listchars+=nbsp:~,extends:»,precedes:«
+else
+    set listchars+=nbsp:•,extends:…,precedes:…
+endif
 set hlsearch   " Highlight search matches in whole window...
 nohlsearch     " ...but start w/o annoying leftover highlights
 set incsearch  " Start highlighting while typing search pattern
@@ -269,6 +281,15 @@ set history=1000
 setglobal foldmethod=syntax foldlevelstart=99
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
 set sidescrolloff=5  "       ... 5 columns left/right ...
+set fillchars=vert:│
+
+" wildignore {{{
+set wildignore+=*.o,*.obj,*.tlog " MSVC
+set wildignore+=*.ppu " Pascal/FPC
+set wildignore+=*.aux,*.out,*.synctex.*,*.pyg,*.toc,*.fls,*.fdb_latexmk " TeX
+set wildignore+=tags,*.swp,.netrwhist,.viminfo,_viminfo " Vim
+set wildignore+=*.pyc,*.pyo " Python
+"}}}
 
 " Centralize backups, swapfiles and undo history {{{
 let s:vimdir = has('win32') ? '~/vimfiles' : '~/.vim'
@@ -276,6 +297,7 @@ exec 'set backupdir='. s:vimdir . '/backup'
 exec 'set directory='. s:vimdir . '/swap'
 if exists("&undodir")
     exec 'set undodir='. s:vimdir . '/undo'
+    set undofile
 endif
 "}}}
 
