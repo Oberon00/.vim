@@ -109,6 +109,9 @@ let g:snips_author = 'Christian Neumüller'
 let g:ipy_perform_mappings = 0
 let g:ipy_completefunc = 0
 
+" vim-colorscheme-switcher {{{2
+let g:colorscheme_switcher_define_mappings = 0
+
 
 
 " Visual settings {{{1
@@ -127,7 +130,7 @@ elseif $TERM == 'xterm'
     set t_Co=256  " Force 256 colors.
 endif
 
-set guicursor=n:blinkon0  " No blinking cursor in normal mode.
+set guicursor+=n:blinkon0  " No blinking cursor in normal mode.
 
 set shortmess+=I  " No intro-message
 set completeopt-=preview
@@ -142,29 +145,33 @@ if has('win32') && !has('gui_running')
 else
     set listchars+=nbsp:•,extends:…,precedes:…
 endif
+set showbreak=\
+set fillchars=vert:│  " Unicode border element
+" Use setglobal to not overwrite anything when vimrc is re-sourced.
+setglobal foldmethod=syntax foldlevelstart=99
+set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
+set sidescrolloff=5  "       ... 5 columns left/right ...
+set display+=lastline
+
 set hlsearch   " Highlight search matches in whole window...
 nohlsearch     " ...but start w/o annoying leftover highlights
 set incsearch  " Start highlighting while typing search pattern
 " End search highlighting by pressing <Ctrl-L>:
 nnoremap <silent> <C-L> :nohlsearch<CR><C-L>
+
+
 " Color scheme(s) {{{2
 function! s:SetDarkBackground()
     set background=dark
-    let g:gruvbox_contrast = 'soft'
     call colorutil#LinkKWOperatorsToKWs()
-    silent! colorscheme gruvbox
+    call xolox#colorscheme_switcher#switch_to('gruvbox')
 endfunction
 
 function! s:SetLightBackground()
     set background=light
-    if has('gui_running') " Sadly, ironman is only available for gVim
-        call colorutil#LinkKWOperatorsToOperators()
-        call colorutil#LinkStartify()
-        silent! colorscheme ironman
-    else
-        let g:gruvbox_contrast = 'hard'
-        silent! colorscheme gruvbox
-    endif
+    call colorutil#LinkKWOperatorsToOperators()
+    call colorutil#LinkStartify()
+    call xolox#colorscheme_switcher#switch_to('github')
 endfunction
 
 function! s:ToggleBackground()
@@ -177,10 +184,13 @@ endfunction
 noremap <silent> <F2> :<C-U>call <SID>ToggleBackground()<CR>
 
 let s:use_italics = has('gui_running') || $TERM != 'xterm'
+let g:gruvbox_contrast = 'soft'
 let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
 let g:gruvbox_italic = s:use_italics
-call s:SetDarkBackground() " Start with the dark background
+
+runtime plugin/colorscheme-switcher.vim
+call s:SetLightBackground()
 
 
 
@@ -310,15 +320,8 @@ set browsedir=buffer
 set clipboard=unnamed
 set ignorecase smartcase
 set history=1000
-" Use setglobal to not overwrite anything when vimrc is re-sourced.
-setglobal foldmethod=syntax foldlevelstart=99
-set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
-set sidescrolloff=5  "       ... 5 columns left/right ...
-set fillchars=vert:│  " Unicode border element
-set showbreak=\
 
 set nrformats-=octal
-set display+=lastline
 
 " wildignore {{{
 set wildignore+=*.o,*.obj,*.tlog " MSVC
