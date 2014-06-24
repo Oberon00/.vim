@@ -20,7 +20,7 @@ set mouse=a   " Enable mouse in all modes.
 " Encoding and tabs {{{1
 
 set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
-set fileencodings=ucs-bom,utf-8,cp1252
+set fileencodings=ucs-bom,utf-8,utf-16,utf-16le,ucs-4,ucs-4-le,cp1252
 set fileformats=unix,dos,mac  " Unix LF by default (but still can read CRLF)
 set fileformat=unix  " For new files, use Unix LF
 
