@@ -25,9 +25,9 @@ set fileformats=unix,dos,mac  " Unix LF by default (but still can read CRLF)
 set fileformat=unix  " For new files, use Unix LF
 
 " Indentation is 4 spaces, but (existing) hard tabs still occupy 8 columns.
-set shiftwidth=4
-set softtabstop=4
+set shiftwidth=4 softtabstop=4
 set expandtab
+set shiftround
 
 
 
@@ -46,14 +46,14 @@ call pathogen#infect()
 " Filetype-specific settings {{{1
 
 function! s:SetPascalOptions()
-    setlocal shiftwidth=2 softtabstop=2 textwidth=82
+    setlocal shiftwidth=2 softtabstop=2
     compiler fpcD
 endfunction
 let g:pascal_delphi = 1
 let g:pascal_fpc_mode = 'tp'
 
 function! s:SetTexOptions()
-    setlocal shiftwidth=2 softtabstop=2 textwidth=82
+    setlocal shiftwidth=2 softtabstop=2
     nnoremap <buffer> <F6> :<C-U>w<CR>:<C-U>Latexmk<CR>
     nnoremap <buffer> <F5> :<C-U>LatexView<CR>
 endfunction
@@ -133,7 +133,7 @@ set completeopt-=preview
 
 set wildmenu  " Display possible commandline completions.
 set showcmd  " Show normal mode commands in bottom line
-set showmode
+set showmode " Show mode (INSERT, VISUAL, ...)
 
 set list listchars=trail:·,tab:►→
 if has('win32') && !has('gui_running')
@@ -307,6 +307,7 @@ else
 endif
 " }}}
 
+set textwidth=82
 set browsedir=buffer
 set clipboard=unnamed
 set ignorecase smartcase
@@ -315,7 +316,11 @@ set history=1000
 setglobal foldmethod=syntax foldlevelstart=99
 set scrolloff=1  " Keep at least 1 line below/above the cursor visible.
 set sidescrolloff=5  "       ... 5 columns left/right ...
-set fillchars=vert:│
+set fillchars=vert:│  " Unicode border element
+set showbreak=\
+
+set nrformats-=octal
+set display+=lastline
 
 " wildignore {{{
 set wildignore+=*.o,*.obj,*.tlog " MSVC
