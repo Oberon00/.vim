@@ -16,7 +16,7 @@ endif
 let colors_name = "ironman"
 
 hi Normal                    guifg=#222222 guibg=#F0F0F0
-                             
+
 " Search
 hi IncSearch                 gui=NONE guifg=Black guibg=#FFFF4B
 hi Search                    gui=NONE guifg=Black guibg=#FFFF8F
@@ -110,12 +110,6 @@ hi! link Debug		Special
 hi! link diffAdded      DiffAdd
 hi! link diffRemoved    DiffDelete
 hi! link diffChanged    DiffChange
-
-" vim-startify {{{1
-hi! link StartifyNumber Number
-hi! link StartifySection Title
-hi! link StartifyFile Identifier
-hi! link StartifySpecial Type
 
 " HTML {{{1
 hi htmlLink                  gui=UNDERLINE guifg=#0000ff guibg=NONE

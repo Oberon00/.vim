@@ -103,6 +103,7 @@ let g:UltiSnipsJumpBackwardTrigger = '<C-h>'
 if has('win32')
     let g:UltiSnipsSnippetsDir = '~/vimfiles/UltiSnips'
 endif
+let g:snips_author = 'Christian Neumüller'
 
 " ipython {{{2
 let g:ipy_perform_mappings = 0
@@ -150,21 +151,18 @@ nnoremap <silent> <C-L> :nohlsearch<CR><C-L>
 function! s:SetDarkBackground()
     set background=dark
     let g:gruvbox_contrast = 'soft'
-    hi! link pascalOperator Keyword
-    hi! link luaOperator Keyword
+    call colorutil#LinkKWOperatorsToKWs()
     silent! colorscheme gruvbox
 endfunction
 
 function! s:SetLightBackground()
     set background=light
     if has('gui_running') " Sadly, ironman is only available for gVim
-        hi! link pascalOperator Operator
-        hi! link luaOperator Operator
+        call colorutil#LinkKWOperatorsToOperators()
+        call colorutil#LinkStartify()
         silent! colorscheme ironman
     else
         let g:gruvbox_contrast = 'hard'
-        hi! link pascalOperator Keyword
-        hi! link luaOperator Keyword
         silent! colorscheme gruvbox
     endif
 endfunction
