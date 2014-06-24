@@ -338,5 +338,17 @@ endif
 " <C-]> is untypeable on a german keyboard.
 nnoremap <CR> <C-]>
 
+" Move up/down by screen lines, not physical lines {{{
+noremap j gj
+noremap k gk
+function! s:DefaultJK()
+    nnoremap <buffer> j j
+    nnoremap <buffer> k k
+endfunction
 
+autocmd vrcFiletypes FileType startify call <SID>DefaultJK()
+"}}}
+
+" Start new, undoable edit before deleting line
+inoremap <C-U> <C-G>u<C-U>
 " vim: foldmethod=marker
