@@ -354,4 +354,37 @@ autocmd vrcFiletypes FileType startify call <SID>DefaultJK()
 
 " Start new, undoable edit before deleting line
 inoremap <C-U> <C-G>u<C-U>
+
+" Restore cursor position {{{
+" From http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
+function! s:RestoreCursor()
+  if line("'\"") <= line("$")
+    normal! g`"
+    call s:UnfoldCursor()
+  endif
+endfunction
+
+function! s:UnfoldCursor()
+    if !&foldenable
+        return
+    endif
+    let cl = line(".")
+    if cl <= 1
+        return
+    endif
+    let cf  = foldlevel(cl)
+    let uf  = foldlevel(cl - 1)
+    let min = min([cf, uf])
+    if min
+        execute "normal!" min . "zo"
+        return 1
+    endif
+endfunction
+
+augroup vrcRestoreCursor
+  autocmd!
+  autocmd BufWinEnter * call <SID>RestoreCursor()
+augroup END
+"}}}
+
 " vim: foldmethod=marker
