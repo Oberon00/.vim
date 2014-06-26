@@ -189,7 +189,6 @@ let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
 let g:gruvbox_italic = s:use_italics
 
-runtime plugin/colorscheme-switcher.vim
 call s:SetLightBackground()
 
 
