@@ -60,11 +60,14 @@ endfunction
 
 augroup vrcFiletypes
     autocmd!
-    autocmd FileType pascal call <SID>SetPascalOptions()
-    autocmd FileType tex,plaintex call <SID>SetTexOptions()
-    autocmd FileType snippets setlocal noexpandtab tabstop=4
-    autocmd FileType vim setlocal foldmethod=marker foldlevel=0
-    autocmd FileType python setlocal foldmethod=indent
+    au FileType pascal call <SID>SetPascalOptions()
+    au FileType tex,plaintex call <SID>SetTexOptions()
+    au FileType snippets setlocal noexpandtab tabstop=4
+    au FileType vim setlocal foldmethod=marker foldlevel=0
+    au FileType python setlocal foldmethod=indent
+    au FileType markdown setlocal shiftwidth=2 softtabstop=2 foldmethod=indent
+    au FileType rst setlocal shiftwidth=2 softtabstop=2 noshiftround
+                \            foldmethod=indent indentexpr=
 augroup END
 
 set cinoptions+=g0 " Do not indent public/private/protected
@@ -112,6 +115,9 @@ let g:ipy_completefunc = 0
 " vim-colorscheme-switcher {{{2
 let g:colorscheme_switcher_define_mappings = 0
 
+" vim-shell {{{2
+let g:shell_mappings_enabled = 0
+noremap <F11> :<C-U>Fullscreen<CR>
 
 
 " Visual settings {{{1
@@ -182,6 +188,7 @@ function! s:ToggleBackground()
     endif
 endfunction
 noremap <silent> <F2> :<C-U>call <SID>ToggleBackground()<CR>
+inoremap <silent> <F2> <C-O>:<C-U>call <SID>ToggleBackground()<CR>
 
 let s:use_italics = has('gui_running') || $TERM != 'xterm'
 let g:gruvbox_contrast = 'soft'
@@ -314,7 +321,7 @@ else
 endif
 " }}}
 
-set textwidth=82
+set textwidth=80
 set browsedir=buffer
 set clipboard=unnamed
 set ignorecase smartcase
@@ -389,4 +396,11 @@ augroup vrcRestoreCursor
 augroup END
 "}}}
 
+set visualbell t_vb=
+if has('gui_running')
+    augroup vrcGuiEnter
+        autocmd!
+        autocmd GUIEnter * set t_vb=
+    augroup END
+endif
 " vim: foldmethod=marker
