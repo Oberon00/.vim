@@ -175,9 +175,11 @@ endfunction
 
 function! s:SetLightBackground()
     set background=light
-    call colorutil#LinkKWOperatorsToOperators()
-    call colorutil#LinkStartify()
-    call xolox#colorscheme_switcher#switch_to('github')
+    if has('gui_running') || &t_Co >= 256
+        call colorutil#LinkKWOperatorsToOperators()
+        call colorutil#LinkStartify()
+        call xolox#colorscheme_switcher#switch_to('github')
+    endif
 endfunction
 
 function! s:ToggleBackground()
@@ -196,7 +198,11 @@ let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
 let g:gruvbox_italic = s:use_italics
 
-call s:SetLightBackground()
+if has('gui_running')
+    call s:SetLightBackground()
+else
+    call s:SetDarkBackground()
+endif
 
 
 
