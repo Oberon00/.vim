@@ -145,7 +145,7 @@ set wildmenu  " Display possible commandline completions.
 set showcmd  " Show normal mode commands in bottom line
 set showmode " Show mode (INSERT, VISUAL, ...)
 
-set list listchars=trail:·,tab:►→
+set list listchars=trail:·,tab:→\ 
 if has('win32') && !has('gui_running')
     set listchars+=nbsp:~,extends:»,precedes:«
 else
