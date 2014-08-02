@@ -198,11 +198,7 @@ let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italicize_strings = s:use_italics
 let g:gruvbox_italic = s:use_italics
 
-if has('gui_running')
-    call s:SetLightBackground()
-else
-    call s:SetDarkBackground()
-endif
+call s:SetDarkBackground()
 
 
 
