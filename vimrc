@@ -398,6 +398,7 @@ augroup vrcRestoreCursor
 augroup END
 "}}}
 
+" Disable (visual) bell {{{
 set visualbell t_vb=
 if has('gui_running')
     augroup vrcGuiEnter
@@ -405,4 +406,8 @@ if has('gui_running')
         autocmd GUIEnter * set t_vb=
     augroup END
 endif
+"}}}
+
+noremap <leader>gf :<C-U>edit <cfile><CR>
+
 " vim: foldmethod=marker
