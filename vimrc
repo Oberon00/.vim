@@ -107,6 +107,8 @@ if has('win32')
     let g:UltiSnipsSnippetsDir = '~/vimfiles/UltiSnips'
 endif
 let g:snips_author = 'Christian Neumüller'
+let g:snips_email = 'cn00@gmx.at'
+let g:snips_github = 'Oberon00'
 
 " ipython {{{2
 let g:ipy_perform_mappings = 0
@@ -189,14 +191,12 @@ function! s:ToggleBackground()
         call s:SetLightBackground()
     endif
 endfunction
-noremap <silent> <F2> :<C-U>call <SID>ToggleBackground()<CR>
-inoremap <silent> <F2> <C-O>:<C-U>call <SID>ToggleBackground()<CR>
+noremap <silent> <S-F2> :<C-U>call <SID>ToggleBackground()<CR>
+inoremap <silent> <S-F2> <C-O>:<C-U>call <SID>ToggleBackground()<CR>
 
-let s:use_italics = has('gui_running') || $TERM != 'xterm'
 let g:gruvbox_contrast = 'soft'
 let g:gruvbox_italicize_comments = 0
-let g:gruvbox_italicize_strings = s:use_italics
-let g:gruvbox_italic = s:use_italics
+let g:gruvbox_italic = 0
 
 call s:SetDarkBackground()
 
@@ -332,7 +332,10 @@ set history=1000
 set nrformats-=octal
 
 " wildignore {{{
-set wildignore+=*.o,*.obj,*.tlog " MSVC
+set wildignore+=*.exe,*.dll " Windows Binaries
+set wildignore+=*.so " Linux Binaries
+set wildignore+=*.obj,*.tlog,*.lib " MSVC
+set wildignore+=*.o,*.a,*.out
 set wildignore+=*.ppu " Pascal/FPC
 set wildignore+=*.aux,*.out,*.synctex.*,*.pyg,*.toc,*.fls,*.fdb_latexmk " TeX
 set wildignore+=tags,*.swp,.netrwhist,.viminfo,_viminfo " Vim
@@ -410,4 +413,6 @@ endif
 
 noremap <leader>gf :<C-U>edit <cfile><CR>
 
+noremap <silent> <F2> :<C-U>buffer #<CR>
+inoremap <silent> <F2> <C-O>:<C-U>buffer #<CR>
 " vim: foldmethod=marker
