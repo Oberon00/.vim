@@ -62,7 +62,7 @@ syn keyword     rstTodo             contained FIXME TODO XXX NOTE
 
 execute 'syn region rstComment contained' .
       \ ' start=/.*/'
-      \ ' end=/^\s\@!/ contains=rstTodo'
+      \ ' end=/^\_s\@!/ contains=rstTodo'
 
 execute 'syn region rstFootnote contained matchgroup=rstDirective' .
       \ ' start=+\[\%(\d\+\|#\%(' . s:ReferenceName . '\)\=\|\*\)\]\_s+' .
