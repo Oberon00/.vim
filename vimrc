@@ -1,4 +1,5 @@
 " Basic settings {{{1
+
 set nocompatible
 
 let mapleader = '-'
@@ -32,6 +33,7 @@ set shiftround
 
 
 " Pathogen {{{1
+
 let g:pathogen_disabled = []
 if has('win32')
     " vim-ipython is too much trouble on windows. I'm affected by
@@ -58,13 +60,21 @@ function! s:SetTexOptions()
     nnoremap <buffer> <F5> :<C-U>LatexView<CR>
 endfunction
 
+function! s:SetPythonOptions()
+    setlocal foldmethod=indent
+    if has('python3') && !has('python')
+        setlocal omnifunc=python3complete#Complete
+    endif
+endfunction
+
 augroup vrcFiletypes
     autocmd!
+    au FileType c,cpp call SuperTabSetDefaultCompletionType('<C-P>')
     au FileType pascal call <SID>SetPascalOptions()
     au FileType tex,plaintex call <SID>SetTexOptions()
     au FileType snippets setlocal noexpandtab tabstop=4
     au FileType vim setlocal foldmethod=marker foldlevel=0
-    au FileType python setlocal foldmethod=indent
+    au FileType python call <SID>SetPythonOptions()
     au FileType markdown setlocal shiftwidth=2 softtabstop=2 foldmethod=indent
     au FileType rst setlocal shiftwidth=2 softtabstop=2 noshiftround
                 \            foldmethod=indent indentexpr=
@@ -85,6 +95,7 @@ nnoremap <leader>l :CtrlPLine<CR>
 
 " Startify {{{2
 let g:startify_session_persistence = 1
+au vrcFiletypes FileType startify setlocal cursorline
 
 
 " LaTeXBox {{{2
@@ -120,6 +131,10 @@ let g:colorscheme_switcher_define_mappings = 0
 " vim-shell {{{2
 let g:shell_mappings_enabled = 0
 noremap <F11> :<C-U>Fullscreen<CR>
+
+" SuperTab {{{2
+let g:SuperTabDefaultCompletionType = 'context'
+
 
 
 " Visual settings {{{1
@@ -242,6 +257,7 @@ set sessionoptions+=unix,slash
 nnoremap <silent> <F4> :exec 'SSave ' . fnamemodify(v:this_session, ':t')<CR>
 
 
+
 " Foldtext {{{1
 
 let s:foldfill = matchstr(&fillchars, 'fold:\zs.')
@@ -325,7 +341,7 @@ endif
 
 set textwidth=80
 set browsedir=buffer
-set clipboard=unnamed
+set clipboard=unnamed,unnamedplus
 set ignorecase smartcase
 set history=1000
 
@@ -352,8 +368,9 @@ if exists("&undodir")
 endif
 "}}}
 
-" <C-]> is untypeable on a german keyboard.
-nnoremap <CR> <C-]>
+" <C-]> is untypeable on a german keyboard.  Use recursive mapping here because
+" we want to use any tag handling overrides by ftplugins and the like.
+nmap <CR> <C-]>
 
 " Move up/down by screen lines, not physical lines {{{
 noremap j gj
