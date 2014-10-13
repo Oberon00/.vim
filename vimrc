@@ -23,7 +23,6 @@ set mouse=a   " Enable mouse in all modes.
 set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
 set fileencodings=ucs-bom,utf-8,utf-16,utf-16le,ucs-4,ucs-4-le,cp1252
 set fileformats=unix,dos,mac  " Unix LF by default (but still can read CRLF)
-set fileformat=unix  " For new files, use Unix LF
 
 " Indentation is 4 spaces, but (existing) hard tabs still occupy 8 columns.
 set shiftwidth=4 softtabstop=4
@@ -95,7 +94,7 @@ nnoremap <leader>l :CtrlPLine<CR>
 
 " Startify {{{2
 let g:startify_session_persistence = 1
-au vrcFiletypes FileType startify setlocal cursorline
+au vrcFiletypes User Startified setlocal cursorline
 
 
 " LaTeXBox {{{2
@@ -169,6 +168,9 @@ else
     set listchars+=nbsp:•,extends:…,precedes:…
 endif
 set showbreak=\
+if exists('&breakindent')
+    set breakindent
+endif
 set fillchars=vert:│  " Unicode border element
 " Use setglobal to not overwrite anything when vimrc is re-sourced.
 setglobal foldmethod=syntax foldlevelstart=99
@@ -242,11 +244,12 @@ endfunc
 set laststatus=2  " Always show statusbar 
 set statusline= " Clear statusline, append below:
 set statusline+=%4l,%-5(%02c%03V%)  " Line and column position
+set statusline+=\ %LL " Total line count (with a literal 'L' appended)
 set statusline+=\ %=%<  " Start of right aligned part + truncate here
 set statusline+=%{expand('%:~:.')}  "File path
-set statusline+=\ %LL " Total line count (with a literal 'L' appended)
 set statusline+=%(\ [%M%R%H%W]%)  " Other flags
 set statusline+=%(\ %q%)  " Location/Quickfix window?
+set statusline+=%(\ %{fugitive#statusline()}%)  " Git branch/commit
 set statusline+=%(\ [%{VrcFileInfo()}]%)  " File info
 
 
@@ -294,7 +297,7 @@ set foldtext=VrcGetFoldText()
 " Other settings {{{1
 " chdir to file directory {{{
 function! s:EnterDir()
-    if expand('%:p:h') !~? '\v/tmp|\\\\|\:\:' && expand('%:t') != ''
+    if expand('%:p:h') !~? '\v/tmp|://|\\\\|\:\:' && expand('%:t') != ''
         try
             lcd %:p:h
         catch /E344/
