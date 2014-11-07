@@ -21,7 +21,7 @@ set mouse=a   " Enable mouse in all modes.
 " Encoding and tabs {{{1
 
 set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
-set fileencodings=ucs-bom,utf-8,utf-16,utf-16le,ucs-4,ucs-4-le,cp1252
+set fileencodings=ucs-bom,utf-8,cp1252
 set fileformats=unix,dos,mac  " Unix LF by default (but still can read CRLF)
 
 " Indentation is 4 spaces, but (existing) hard tabs still occupy 8 columns.
@@ -392,7 +392,7 @@ inoremap <C-U> <C-G>u<C-U>
 " Restore cursor position {{{
 " From http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
 function! s:RestoreCursor()
-  if line("'\"") <= line("$")
+  if line("'\"") <= line("$") && &filetype != 'gitcommit'
     normal! g`"
     call s:UnfoldCursor()
   endif
@@ -417,7 +417,7 @@ endfunction
 
 augroup vrcRestoreCursor
   autocmd!
-  autocmd BufWinEnter * call <SID>RestoreCursor()
+  autocmd BufWinEnter * silent! call <SID>RestoreCursor()
 augroup END
 "}}}
 
@@ -431,8 +431,19 @@ if has('gui_running')
 endif
 "}}}
 
-noremap <leader>gf :<C-U>edit <cfile><CR>
-
+" Switch buffers {{{
 noremap <silent> <F2> :<C-U>buffer #<CR>
 inoremap <silent> <F2> <C-O>:<C-U>buffer #<CR>
+
+noremap <silent> <C-Tab> :<C-U>bnext<CR>
+inoremap <silent> <C-Tab> <C-O>:<C-U>bnext<CR>
+noremap <silent> <C-S-Tab> :<C-U>bprevious<CR>
+inoremap <silent> <C-S-Tab> <C-O>:<C-U>bprevious<CR>
+"}}}
+
+noremap <leader>gf :<C-U>edit <cfile><CR>
+
+vnoremap <leader>s :<C-U>'<,'>sort u<CR>
+
+
 " vim: foldmethod=marker
