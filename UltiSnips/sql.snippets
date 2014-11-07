@@ -1,0 +1,19 @@
+snippet nfk "Named FK constraint" b
+ALTER TABLE $1 ADD CONSTRAINT ${1/./\l$0/}_${2:rtableOrName}_fk
+	FOREIGN KEY(${3:${2/./\u$0/}Id}) REFERENCES ${5:${2/./\u$0/}}(${4:$3});
+endsnippet
+
+snippet npk "Named PK constraint" b
+ALTER TABLE $1 ADD CONSTRAINT ${1/./\l$0/}_pk PRIMARY KEY (${2:$1Id});
+endsnippet
+
+snippet maintbl "CREATE TABLE with -- line above" b
+-------------------------------------------------------------------------------
+CREATE TABLE $1 (
+	$0);
+endsnippet
+
+snippet tbl "CREATE TABLE" b
+CREATE TABLE $1 (
+	$0);
+endsnippet
