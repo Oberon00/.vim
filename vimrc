@@ -16,6 +16,7 @@ set mouse=a   " Enable mouse in all modes.
 
 "set debug+=msg
 
+let s:has_python = has('python') || has('python3')
 
 
 " Encoding and tabs {{{1
@@ -34,12 +35,17 @@ set shiftround
 " Pathogen {{{1
 
 let g:pathogen_disabled = []
-if has('win32')
-    " vim-ipython is too much trouble on windows. I'm affected by
+if has('win32') || !s:has_python
+    " vim-ipython is too much trouble on Windows. I'm affected by
     " https://github.com/ivanov/vim-ipython/issues/20 (which can be fixed) and
     " http://bugs.python.org/issue17213 (which is very annoying).
     call add(g:pathogen_disabled, 'vim-ipython')
 endif
+
+if !s:has_python
+    call add(g:pathogen_disabled, 'ultisnips')
+endif
+
 call pathogen#infect()
 
 
@@ -64,6 +70,7 @@ function! s:SetPythonOptions()
     if has('python3') && !has('python')
         setlocal omnifunc=python3complete#Complete
     endif
+    call SuperTabSetDefaultCompletionType("<c-x><c-o>")
 endfunction
 
 augroup vrcFiletypes
