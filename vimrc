@@ -88,9 +88,9 @@ set cinoptions+=g0 " Do not indent public/private/protected
 runtime macros/matchit.vim
 
 " CtrlP {{{2
-nnoremap <leader>b  :CtrlPBuffer<CR>
-nnoremap <leader>pm :CtrlPMRU<CR>
-nnoremap <leader>l :CtrlPLine<CR>
+nnoremap <leader>gb  :CtrlPBuffer<CR>
+nnoremap <leader>gm :CtrlPMRU<CR>
+nnoremap <leader>gl :CtrlPLine<CR>
 
 " Startify {{{2
 let g:startify_session_persistence = 1
@@ -344,7 +344,6 @@ endif
 
 set textwidth=80
 set browsedir=buffer
-set clipboard=unnamed,unnamedplus
 set ignorecase smartcase
 set history=1000
 
@@ -362,7 +361,7 @@ set wildignore+=*.pyc,*.pyo " Python
 "}}}
 
 " Centralize backups, swapfiles and undo history {{{
-let s:vimdir = has('win32') ? '~/vimfiles' : '~/.vim'
+let s:vimdir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 exec 'set backupdir='. s:vimdir . '/backup'
 exec 'set directory='. s:vimdir . '/swap'
 if exists("&undodir")
@@ -443,7 +442,14 @@ inoremap <silent> <C-S-Tab> <C-O>:<C-U>bprevious<CR>
 
 noremap <leader>gf :<C-U>edit <cfile><CR>
 
-vnoremap <leader>s :<C-U>'<,'>sort u<CR>
+vnoremap <leader>us :<C-U>'<,'>sort u<CR>
 
+" Clipboard/yanking/pasting {{{
+noremap <leader>p "*p
+noremap <leader>P "*P
+noremap <leader>y "*y
+noremap <leader>Y "*y$
+noremap Y y$
+" }}}
 
 " vim: foldmethod=marker
