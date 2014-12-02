@@ -1,6 +1,16 @@
 " Basic settings {{{1
-
 set nocompatible
+set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
+set fileencodings=ucs-bom,utf-8,cp1252
+set fileformats=unix,dos,mac  " Unix LF by default (but still can read CRLF)
+
+" Indendation & Tabs {{{
+" Indentation is 4 spaces, but (existing) hard tabs still occupy 8 columns.
+set shiftwidth=4 softtabstop=4
+set expandtab
+set shiftround
+" }}}
+
 
 let mapleader = '-'
 noremap - <NOP>
@@ -18,17 +28,6 @@ set mouse=a   " Enable mouse in all modes.
 
 let s:has_python = has('python') || has('python3')
 
-
-" Encoding and tabs {{{1
-
-set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
-set fileencodings=ucs-bom,utf-8,cp1252
-set fileformats=unix,dos,mac  " Unix LF by default (but still can read CRLF)
-
-" Indentation is 4 spaces, but (existing) hard tabs still occupy 8 columns.
-set shiftwidth=4 softtabstop=4
-set expandtab
-set shiftround
 
 
 
