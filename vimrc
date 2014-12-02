@@ -443,6 +443,20 @@ noremap <leader>gf :<C-U>edit <cfile><CR>
 
 vnoremap <leader>us :<C-U>'<,'>sort u<CR>
 
+""" Window management mappings {{{
+noremap <M-l> <C-W>l
+noremap <M-h> <C-W>h
+noremap <M-j> <C-W>j
+noremap <M-k> <C-W>k
+noremap <M-v> <C-W>v
+noremap <M-s> <C-W>s
+noremap <M-c> <C-W>c
+noremap <M-S-H> <C-W>H
+noremap <M-S-J> <C-W>J
+noremap <M-S-K> <C-W>K
+noremap <M-S-L> <C-W>L
+" }}}
+
 " Clipboard/yanking/pasting {{{
 noremap <leader>p "*p
 noremap <leader>P "*P
