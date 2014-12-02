@@ -29,6 +29,9 @@ set mouse=a   " Enable mouse in all modes.
 let s:has_python = has('python') || has('python3')
 
 
+augroup myvrc
+    au!
+augroup END
 
 
 " Pathogen {{{1
@@ -72,8 +75,7 @@ function! s:SetPythonOptions()
     call SuperTabSetDefaultCompletionType("<c-x><c-o>")
 endfunction
 
-augroup vrcFiletypes
-    autocmd!
+augroup myvrc
     au FileType c,cpp call SuperTabSetDefaultCompletionType('<C-P>')
     au FileType pascal call <SID>SetPascalOptions()
     au FileType tex,plaintex call <SID>SetTexOptions()
@@ -100,7 +102,7 @@ nnoremap <leader>gl :CtrlPLine<CR>
 
 " Startify {{{2
 let g:startify_session_persistence = 1
-au vrcFiletypes User Startified setlocal cursorline
+au myvrc User Startified setlocal cursorline
 
 
 " LaTeXBox {{{2
@@ -312,10 +314,7 @@ function! s:EnterDir()
     endif
 endfunc
 
-augroup vrcMisc
-    autocmd!
-    autocmd BufEnter * call <SID>EnterDir()
-augroup END
+autocmd myvrc BufEnter * call <SID>EnterDir()
 
 nnoremap <Leader>cd :<C-U>lcd %:p:h<CR>:pwd<CR>
 "}}}
@@ -388,7 +387,7 @@ function! s:DefaultJK()
     nnoremap <buffer> k k
 endfunction
 
-autocmd vrcFiletypes FileType startify call <SID>DefaultJK()
+autocmd myvrc User Startified call <SID>DefaultJK()
 "}}}
 
 " Start new, undoable edit before deleting line
@@ -420,19 +419,13 @@ function! s:UnfoldCursor()
     endif
 endfunction
 
-augroup vrcRestoreCursor
-  autocmd!
-  autocmd BufWinEnter * silent! call <SID>RestoreCursor()
-augroup END
+autocmd myvrc BufWinEnter * silent! call <SID>RestoreCursor()
 "}}}
 
 " Disable (visual) bell {{{
 set visualbell t_vb=
 if has('gui_running')
-    augroup vrcGuiEnter
-        autocmd!
-        autocmd GUIEnter * set t_vb=
-    augroup END
+    autocmd myvrc GUIEnter * set t_vb=
 endif
 "}}}
 
