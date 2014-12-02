@@ -65,11 +65,12 @@ function! s:SetTexOptions()
     setlocal shiftwidth=2 softtabstop=2
     nnoremap <buffer> <F6> :<C-U>w<CR>:<C-U>Latexmk<CR>
     nnoremap <buffer> <F5> :<C-U>LatexView<CR>
+    call SuperTabSetDefaultCompletionType("<c-p>")
 endfunction
 
 function! s:SetPythonOptions()
     setlocal foldmethod=indent
-    if has('python3') && !has('python')
+    if has('python3') && (!has('python') || getline(1) =~? 'python3')
         setlocal omnifunc=python3complete#Complete
     endif
     call SuperTabSetDefaultCompletionType("<c-x><c-o>")
@@ -96,9 +97,10 @@ set cinoptions+=g0 " Do not indent public/private/protected
 runtime macros/matchit.vim
 
 " CtrlP {{{2
-nnoremap <leader>gb  :CtrlPBuffer<CR>
+nnoremap <leader>gb :CtrlPBuffer<CR>
 nnoremap <leader>gm :CtrlPMRU<CR>
 nnoremap <leader>gl :CtrlPLine<CR>
+let g:ctrlp_reuse_window = 'startify'
 
 " Startify {{{2
 let g:startify_session_persistence = 1
@@ -442,6 +444,12 @@ inoremap <silent> <C-S-Tab> <C-O>:<C-U>bprevious<CR>
 noremap <leader>gf :<C-U>edit <cfile><CR>
 
 vnoremap <leader>us :<C-U>'<,'>sort u<CR>
+
+" Remap useless keys {{{
+noremap <F1> <Esc>
+inoremap <F1> <Esc>
+nnoremap Q <Esc>
+" }}}
 
 """ Window management mappings {{{
 noremap <M-l> <C-W>l
