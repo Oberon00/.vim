@@ -6,3 +6,20 @@ int main()
 	${0:std::cout << "Hello world!\n";}
 }
 endsnippet
+
+snippet ns "Namespace" b
+namespace $1 {
+${VISUAL}$0
+} // namespace $1
+endsnippet
+
+snippet once "Include header once only guard"
+#ifndef ${1:$2`!p
+snip.rv = re.sub(r'[^A-Za-z0-9]+','_', snip.fn).upper() + '_INCLUDED'
+`}
+#define $1
+
+${VISUAL}$0
+
+#endif // $1
+endsnippet
