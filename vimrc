@@ -88,8 +88,9 @@ augroup myvrc
                 \            foldmethod=indent indentexpr=
 augroup END
 
-set cinoptions+=g0 " Do not indent public/private/protected
-
+set cinoptions+=g0  " Do not indent public/private/protected
+set cinoptions+=N-s " Do not indent namespace contents
+set cinoptions+=(s  " Indent contents of () only once
 
 
 " Plugins {{{1
