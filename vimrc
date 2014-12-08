@@ -467,10 +467,10 @@ noremap <M-S-L> <C-W>L
 " }}}
 
 " Clipboard/yanking/pasting {{{
-noremap <leader>p "*p
-noremap <leader>P "*P
-noremap <leader>y "*y
-noremap <leader>Y "*y$
+noremap <leader>p "+p
+noremap <leader>P "+P
+noremap <leader>y "+y
+noremap <leader>Y "+y$
 noremap Y y$
 " }}}
 
