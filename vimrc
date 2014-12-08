@@ -145,7 +145,13 @@ noremap <F11> :<C-U>Fullscreen<CR>
 " SuperTab {{{2
 let g:SuperTabDefaultCompletionType = 'context'
 
+" Syntastic {{{2
+nnoremap <Leader>sy :<C-U>SyntasticCheck<CR>
 
+let g:syntastic_error_symbol = '✘'
+let g:syntastic_warning_symbol = '‼'
+let g:syntastic_style_error_symbol = '‡'
+let g:syntastic_style_warning_symbol = '†'
 
 " Visual settings {{{1
 
@@ -258,6 +264,7 @@ set statusline+=%4l,%-5(%02c%03V%)  " Line and column position
 set statusline+=\ %LL " Total line count (with a literal 'L' appended)
 set statusline+=\ %=%<  " Start of right aligned part + truncate here
 set statusline+=%{expand('%:~:.')}  "File path
+set statusline+=%{SyntasticStatuslineFlag()} " Syntastic
 set statusline+=%(\ [%M%R%H%W]%)  " Other flags
 set statusline+=%(\ %q%)  " Location/Quickfix window?
 set statusline+=%(\ %{fugitive#statusline()}%)  " Git branch/commit
