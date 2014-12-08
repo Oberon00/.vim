@@ -13,6 +13,7 @@ function colorutil#LinkKWOperatorsToKWs()
     hi! link pascalOperator Keyword
     hi! link luaOperator Keyword
     hi! link javascriptOperator Keyword
+    hi! link cppOperator Keyword
 endfunction
 
 function colorutil#LinkKWOperatorsToOperators()
