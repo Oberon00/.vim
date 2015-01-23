@@ -76,6 +76,10 @@ function! s:SetPythonOptions()
     call SuperTabSetDefaultCompletionType("<c-x><c-o>")
 endfunction
 
+function! s:SetHtmlOptions()
+    nnoremap <buffer> <F5> :<C-U>call xolox#misc#open#file(expand('%'))<CR>
+endfunction
+
 augroup myvrc
     au FileType c,cpp call SuperTabSetDefaultCompletionType('<C-P>')
     au FileType pascal call <SID>SetPascalOptions()
@@ -86,6 +90,8 @@ augroup myvrc
     au FileType markdown setlocal shiftwidth=2 softtabstop=2 foldmethod=indent
     au FileType rst setlocal shiftwidth=2 softtabstop=2 noshiftround
                 \            foldmethod=indent indentexpr=
+    au FileType html call <SID>SetHtmlOptions()
+    au FileType javascript setlocal iskeyword+=$
 augroup END
 
 set cinoptions+=g0  " Do not indent public/private/protected
@@ -152,6 +158,11 @@ let g:syntastic_error_symbol = '✘'
 let g:syntastic_warning_symbol = '‼'
 let g:syntastic_style_error_symbol = '‡'
 let g:syntastic_style_warning_symbol = '†'
+
+let g:syntastic_html_checkers = ['tidy', 'jshint']
+let g:syntastic_mode_map = {
+            \ 'passive_filetypes': ['c', 'cpp', 'asm']
+            \ }
 
 " Visual settings {{{1
 
