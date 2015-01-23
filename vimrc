@@ -271,7 +271,7 @@ endfunc
 
 set laststatus=2  " Always show statusbar 
 set statusline= " Clear statusline, append below:
-set statusline+=%4l,%-5(%02c%03V%)  " Line and column position
+set statusline+=%4l,%-5(%3v%)  " Line and column position
 set statusline+=\ %LL " Total line count (with a literal 'L' appended)
 set statusline+=\ %=%<  " Start of right aligned part + truncate here
 set statusline+=%{expand('%:~:.')}  "File path
@@ -360,7 +360,7 @@ if has('win32')
     nnoremap <silent><C-S-CR> :<C-U>silent !start explorer .<CR>
 else
     if executable('x-terminal-emulator')
-        nnoremap <silent><C-CR> :<C-U>silent !x-terminal-emulator<CR>
+        nnoremap <silent><C-CR> :<C-U>silent !x-terminal-emulator&<CR>
     endif
     if executable('xdg-open')
         nnoremap <silent><C-S-CR> :<C-U>silent !xdg-open . &<CR>
@@ -384,11 +384,13 @@ set wildignore+=*.ppu " Pascal/FPC
 set wildignore+=*.aux,*.out,*.synctex.*,*.pyg,*.toc,*.fls,*.fdb_latexmk " TeX
 set wildignore+=tags,*.swp,.netrwhist,.viminfo,_viminfo " Vim
 set wildignore+=*.pyc,*.pyo " Python
+set wildignore+=_site,_build " Generated directories
 "}}}
 
 " Centralize backups, swapfiles and undo history {{{
 let s:vimdir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
-exec 'set backupdir='. s:vimdir . '/backup'
+"exec 'set backupdir='. s:vimdir . '/backup'
+set nobackup
 exec 'set directory='. s:vimdir . '/swap'
 if exists("&undodir")
     exec 'set undodir='. s:vimdir . '/undo'
@@ -417,10 +419,10 @@ inoremap <C-U> <C-G>u<C-U>
 " Restore cursor position {{{
 " From http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
 function! s:RestoreCursor()
-  if line("'\"") <= line("$") && &filetype != 'gitcommit'
-    normal! g`"
-    call s:UnfoldCursor()
-  endif
+    if line("'\"") <= line("$") && &filetype != 'gitcommit'
+        normal! g`"
+        call s:UnfoldCursor()
+    endif
 endfunction
 
 function! s:UnfoldCursor()
