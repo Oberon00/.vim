@@ -162,7 +162,7 @@ let g:syntastic_style_warning_symbol = '†'
 
 let g:syntastic_html_checkers = ['tidy', 'jshint']
 let g:syntastic_mode_map = {
-            \ 'passive_filetypes': ['c', 'cpp', 'asm']
+            \ 'passive_filetypes': ['c', 'cpp', 'asm', 'rst']
             \ }
 
 " Visual settings {{{1
