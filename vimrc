@@ -82,6 +82,7 @@ endfunction
 
 augroup myvrc
     au FileType c,cpp call SuperTabSetDefaultCompletionType('<C-P>')
+    au FileType cpp setlocal commentstring=//\ %s
     au FileType pascal call <SID>SetPascalOptions()
     au FileType tex,plaintex call <SID>SetTexOptions()
     au FileType snippets setlocal noexpandtab tabstop=4
