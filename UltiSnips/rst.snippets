@@ -1,3 +1,7 @@
+global !p
+from vim import strwidth
+endglobal
+
 snippet sref "Cross-Reference (Auto Title) (Sphinx)"
 :ref:\`$1\`
 endsnippet
@@ -9,4 +13,16 @@ endsnippet
 snippet lbl "Label" b
 .. _${1:${VISUAL:label}}:
 
+endsnippet
+
+snippet func-sec "Section on a C++-function" b
+
+.. _f-${1:${VISUAL}}:
+
+\`\`$1()\`\`
+`!p snip.rv = (strwidth(t[1]) + 6) * '^'`
+
+::
+
+	$0
 endsnippet
