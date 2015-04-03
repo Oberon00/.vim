@@ -253,6 +253,8 @@ augroup END
 
 call s:SetDarkBackground()
 
+command! -nargs=1 -bar -complete=color Color
+            \ call xolox#colorscheme_switcher#switch_to('<args>')
 
 " Statusline {{{1
 function! VrcFileInfo() " For statusline below.
