@@ -82,6 +82,7 @@ endfunction
 
 augroup myvrc
     au FileType c,cpp call SuperTabSetDefaultCompletionType('<C-P>')
+    au FileType cpp setlocal commentstring=//\ %s
     au FileType pascal call <SID>SetPascalOptions()
     au FileType tex,plaintex call <SID>SetTexOptions()
     au FileType snippets setlocal noexpandtab tabstop=4
@@ -161,7 +162,7 @@ let g:syntastic_style_warning_symbol = '†'
 
 let g:syntastic_html_checkers = ['tidy', 'jshint']
 let g:syntastic_mode_map = {
-            \ 'passive_filetypes': ['c', 'cpp', 'asm']
+            \ 'passive_filetypes': ['c', 'cpp', 'asm', 'rst']
             \ }
 
 " Visual settings {{{1
