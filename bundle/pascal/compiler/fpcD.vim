@@ -12,7 +12,7 @@ if exists(":CompilerSet") != 2		" older Vim always used :setlocal
     command -nargs=* CompilerSet setlocal <args>
 endif
 
-CompilerSet makeprg=fpc\ -Criot\ -vewhnb\ -glt\ -Sa\ %
+CompilerSet makeprg=fpc\ -Criot\ -vewhnb\ -glt\ -Sa\ \"%\"
 if has('win32')
     CompilerSet makeprg+=\ -gc " Generate checks for pointers
 endif
