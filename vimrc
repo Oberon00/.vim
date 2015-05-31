@@ -234,7 +234,6 @@ nnoremap <silent> <C-L> :nohlsearch<CR><C-L>
 " Color scheme(s) {{{2
 function! s:SetDarkBackground()
     set background=dark
-    call colorutil#LinkKWOperatorsToKWs()
     call xolox#colorscheme_switcher#switch_to('gruvbox')
 endfunction
 
@@ -261,9 +260,18 @@ let g:gruvbox_contrast = 'soft'
 let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italic = 0
 
+augroup myvrc
+    au ColorScheme gruvbox
+                \   hi! link hsConSym hsVarSym
+                \ | hi! link hsVarSym Special
+                \ | hi! link ConId Type
+                \ | call colorutil#LinkKWOperatorsToKWs()
+augroup END
+
 call s:SetDarkBackground()
 
-
+command! -nargs=1 -bar -complete=color Color
+            \ call xolox#colorscheme_switcher#switch_to('<args>')
 
 " Statusline {{{1
 function! VrcFileInfo() " For statusline below.
