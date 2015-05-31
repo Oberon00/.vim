@@ -160,6 +160,23 @@ let g:syntastic_warning_symbol = '‼'
 let g:syntastic_style_error_symbol = '‡'
 let g:syntastic_style_warning_symbol = '†'
 
+function! s:SetPyChecker()
+    if getline(1) !~# '\<python3\>'
+        return
+    endif
+
+    if has('win32')
+        let pyexe = expand('$SYSTEMDRIVE') . '\Python34\python.exe'
+        if executable(pyexe)
+            let b:syntastic_python_python_exec = pyexe
+        endif
+    else
+        let b:syntastic_python_python_exec = 'python3'
+    endif
+endfunction
+
+au myvrc FileType python call <SID>SetPyChecker()
+
 let g:syntastic_html_checkers = ['tidy', 'jshint']
 let g:syntastic_mode_map = {
             \ 'passive_filetypes': ['c', 'cpp', 'asm', 'rst']
