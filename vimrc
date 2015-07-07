@@ -148,7 +148,9 @@ let g:colorscheme_switcher_define_mappings = 0
 
 " vim-shell {{{2
 let g:shell_mappings_enabled = 0
+let g:shell_fullscreen_message = 0
 noremap <F11> :<C-U>Fullscreen<CR>
+inoremap <F11> <C-O>:<C-U>Fullscreen<CR>
 
 " SuperTab {{{2
 let g:SuperTabDefaultCompletionType = 'context'
