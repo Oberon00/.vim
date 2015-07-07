@@ -93,6 +93,7 @@ augroup myvrc
                 \            foldmethod=indent indentexpr=
     au FileType html call <SID>SetHtmlOptions()
     au FileType javascript setlocal iskeyword+=$
+    au FileType phtml setlocal indentexpr& autoindent
 augroup END
 
 set cinoptions+=g0  " Do not indent public/private/protected
