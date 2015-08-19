@@ -374,7 +374,7 @@ if has('win32')
     nnoremap <F5> :<C-U>silent !start cmd /c "%:r.exe" & pause<CR>
 else
     if executable('x-terminal-emulator')
-        nnoremap <F5> :<C-U>silent !x-terminal-emulator -e './%:r'<CR>
+        nnoremap <F5> :<C-U>silent !x-terminal-emulator -e bash -c ''\''./%:r'\''; read -p "Finished ($?)."'&<CR>
     else
         nnoremap <F5> :<C-U>!'./%:r'<CR>
     endif
