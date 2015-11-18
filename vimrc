@@ -191,11 +191,14 @@ if has('gui_running')
     set guioptions-=m  " Remove menu bar.
     set guioptions-=T  " Remove toolbar.
     if has('win32')
-        set guifont=Consolas:h10
         set guifontwide=NSimSun:h10
+        set guifont=Consolas:h10
     endif " if has('win32')
     if &lines < 40
         set lines=40
+    endif
+    if &columns < 82
+        set columns=82
     endif
 elseif $TERM == 'xterm'
     set t_Co=256  " Force 256 colors.
@@ -213,10 +216,11 @@ set showmode " Show mode (INSERT, VISUAL, ...)
 set list listchars=trail:·,tab:→\ 
 if has('win32') && !has('gui_running')
     set listchars+=nbsp:~,extends:»,precedes:«
+    set showbreak=\
 else
     set listchars+=nbsp:•,extends:…,precedes:…
+    set showbreak=ʅ
 endif
-set showbreak=\
 if exists('&breakindent')
     set breakindent
 endif
@@ -259,7 +263,6 @@ endfunction
 noremap <silent> <S-F2> :<C-U>call <SID>ToggleBackground()<CR>
 inoremap <silent> <S-F2> <C-O>:<C-U>call <SID>ToggleBackground()<CR>
 
-let g:gruvbox_contrast = 'soft'
 let g:gruvbox_italicize_comments = 0
 let g:gruvbox_italic = 0
 
@@ -298,7 +301,7 @@ function! VrcFileInfo() " For statusline below.
     return join(r, ',')
 endfunc
 
-set laststatus=2  " Always show statusbar 
+set laststatus=2  " Always show statusbar
 set statusline= " Clear statusline, append below:
 set statusline+=%4l,%-5(%3v%)  " Line and column position
 set statusline+=\ %LL " Total line count (with a literal 'L' appended)
@@ -410,7 +413,8 @@ set wildignore+=*.so " Linux Binaries
 set wildignore+=*.obj,*.tlog,*.lib " MSVC
 set wildignore+=*.o,*.a,*.out
 set wildignore+=*.ppu " Pascal/FPC
-set wildignore+=*.aux,*.out,*.synctex.*,*.pyg,*.toc,*.fls,*.fdb_latexmk " TeX
+set wildignore+=*.aux,*.out,*.synctex.*,*.pyg,*.toc,*.fls,*.fdb_latexmk,*.pdf " TeX
+set wildignore+=*.bbl,*.bcf,*.blg,*.lol,*.lot*,*.run.xml " TeX/biber
 set wildignore+=tags,*.swp,.netrwhist,.viminfo,_viminfo " Vim
 set wildignore+=*.pyc,*.pyo " Python
 set wildignore+=_site,_build " Generated directories
@@ -421,7 +425,7 @@ let s:vimdir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 "exec 'set backupdir='. s:vimdir . '/backup'
 set nobackup
 exec 'set directory='. s:vimdir . '/swap'
-if exists("&undodir")
+if exists('&undodir')
     exec 'set undodir='. s:vimdir . '/undo'
     set undofile
 endif
@@ -522,5 +526,10 @@ noremap <leader>y "+y
 noremap <leader>Y "+y$
 noremap Y y$
 " }}}
+
+if has('win32')
+    " Vim seems to interfere with %LANG% lately..
+    let $LANG = ''
+endif
 
 " vim: foldmethod=marker
