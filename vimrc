@@ -495,7 +495,19 @@ noremap <silent> <C-S-Tab> :<C-U>bprevious<CR>
 inoremap <silent> <C-S-Tab> <C-O>:<C-U>bprevious<CR>
 "}}}
 
+" Going to files {{{
 noremap <leader>gf :<C-U>edit <cfile><CR>
+
+" Idea from http://unix.stackexchange.com/a/74581
+function! s:ReuseSplitFile()
+    let fname = fnamemodify(findfile(expand('<cfile>')), ':p')
+    wincmd w
+    execute 'edit ' . fname
+endfunction
+
+nnoremap gF :call <SID>ReuseSplitFile()<CR>
+""}}}
+
 
 vnoremap <leader>us :<C-U>'<,'>sort u<CR>
 
