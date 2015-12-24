@@ -14,8 +14,9 @@ let did_replacewordplugin = 1
 " Based on this - http://peterodding.com/code/vim/profile/autoload/xolox/escape.vim
 function! s:EscapeString (string)
   let string=a:string
-  " Escape only backslah, because we use \V (very no magic)
-  let string = escape(string, '\')
+  " Escape only backslash and the pattern delimeter slash,
+  " because we use \V (very no magic)
+  let string = escape(string, '/\')
   " Escape the line endings
   let string = substitute(string, '\n', '\\n', 'g')
   return string
