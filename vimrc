@@ -385,6 +385,11 @@ endif
 "}}}
 
 nnoremap <F6> :w<CR>:<C-U>make!<CR>:copen<CR><C-W>p
+nnoremap <C-K> :cprevious<CR>
+nnoremap <C-J> :cnext<CR>
+
+let g:ag_working_path_mode = 'r'
+nnoremap <F3> :Ag! '\b<cword>\b'<CR>
 
 """ Open command window/explorer here {{{
 if has('win32')
