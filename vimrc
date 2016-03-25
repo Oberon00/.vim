@@ -543,11 +543,15 @@ noremap <leader>P "+P
 noremap <leader>y "+y
 noremap <leader>Y "+y$
 noremap Y y$
+
+" Copy whole buffer to clipboard.
+nnoremap <C-I> gg"+yG
 " }}}
 
 if has('win32')
     " Vim seems to interfere with %LANG% lately..
     let $LANG = ''
 endif
+
 
 " vim: foldmethod=marker
