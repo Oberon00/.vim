@@ -79,3 +79,9 @@
 [submodule "bundle/vim-toml"]
 	path = bundle/vim-toml
 	url = https://github.com/cespare/vim-toml
+[submodule "bundle/vim-characterize"]
+	path = bundle/vim-characterize
+	url = https://github.com/tpope/vim-characterize
+[submodule "bundle/vim-lion"]
+	path = bundle/vim-lion
+	url = https://github.com/tommcdo/vim-lion

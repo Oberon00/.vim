@@ -115,6 +115,9 @@ let g:ctrlp_reuse_window = 'startify'
 let g:startify_session_persistence = 1
 au myvrc User Startified setlocal cursorline
 
+let g:startify_custom_header = []
+
+let g:startify_bookmarks = [{'s': '~/scratch.txt'}]
 
 " LaTeXBox {{{2
 if !has('win32')
