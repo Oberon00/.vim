@@ -196,6 +196,9 @@ if has('gui_running')
     if has('win32')
         set guifontwide=NSimSun:h10
         set guifont=Consolas:h10
+        if (v:version == 704 && has("patch393")) || v:version > 704
+            set renderoptions=type:directx,geom:1
+        endif
     endif " if has('win32')
     if &lines < 40
         set lines=40
