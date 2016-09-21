@@ -434,11 +434,12 @@ set wildignore+=_site,_build " Generated directories
 
 " Centralize backups, swapfiles and undo history {{{
 let s:vimdir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
-"exec 'set backupdir='. s:vimdir . '/backup'
+let s:vimtmpdir = s:vimdir . '/tmp'
+"exec 'set backupdir='. s:vimtmpdir . '/backup'
 set nobackup
-exec 'set directory='. s:vimdir . '/swap'
+exec 'set directory='. s:vimtmpdir . '/swap//'
 if exists('&undodir')
-    exec 'set undodir='. s:vimdir . '/undo'
+    exec 'set undodir='. s:vimtmpdir . '/undo//'
     set undofile
 endif
 "}}}
