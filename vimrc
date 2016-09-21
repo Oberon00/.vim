@@ -438,6 +438,7 @@ let s:vimtmpdir = s:vimdir . '/tmp'
 "exec 'set backupdir='. s:vimtmpdir . '/backup'
 set nobackup
 exec 'set directory='. s:vimtmpdir . '/swap//'
+exec 'set viewdir='. s:vimtmpdir . '/view/'
 if exists('&undodir')
     exec 'set undodir='. s:vimtmpdir . '/undo//'
     set undofile
@@ -462,33 +463,18 @@ autocmd myvrc User Startified call <SID>DefaultJK()
 " Start new, undoable edit before deleting line
 inoremap <C-U> <C-G>u<C-U>
 
-" Restore cursor position {{{
-" From http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
-function! s:RestoreCursor()
-    if line("'\"") <= line("$") && &filetype != 'gitcommit'
-        normal! g`"
-        call s:UnfoldCursor()
-    endif
-endfunction
+" Restore cursor position and folds {{{
+set viewoptions=cursor,folds,unix
 
-function! s:UnfoldCursor()
-    if !&foldenable
+function! s:IfBufListed(code)
+    if !&buflisted
         return
     endif
-    let cl = line(".")
-    if cl <= 1
-        return
-    endif
-    let cf  = foldlevel(cl)
-    let uf  = foldlevel(cl - 1)
-    let min = min([cf, uf])
-    if min
-        execute "normal!" min . "zo"
-        return 1
-    endif
+    exec a:code
 endfunction
 
-autocmd myvrc BufWinEnter * silent! call <SID>RestoreCursor()
+autocmd myvrc BufWinEnter ?* call <SID>IfBufListed('silent! loadview')
+autocmd myvrc BufWinLeave ?* call <SID>IfBufListed('mkview!')
 "}}}
 
 " Disable (visual) bell {{{
