@@ -564,6 +564,26 @@ if has('win32')
     let $LANG = ''
 endif
 
+" Show syntax stack {{{
+
+function! s:DumpSynStack()
+    let sstack = synstack(line('.'), col('.'))
+    let i = len(sstack)
+    for id in reverse(sstack)
+        let i -= 1
+        let name = synIDattr(id, 'name')
+        let tname = synIDattr(synIDtrans(id), 'name')
+        let msg = i . ' ' . name
+        if name !=# tname
+            let msg .= ' -> ' . tname
+        endif
+        echo msg
+    endfor
+endfunction
+
+nnoremap <leader>hi :<C-U>call <SID>DumpSynStack()<CR>
+" }}}
+
 let g:luasyn_nosymboloperator = 1
 let g:luasyn_nofold = 1
 let g:luasyn_fold_function = 1
