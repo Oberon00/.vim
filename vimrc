@@ -350,23 +350,25 @@ let s:foldfill = matchstr(&fillchars, 'fold:\zs.')
 if !strlen(s:foldfill)
     let s:foldfill = '-'
 endif
-let s:metacol = 80
+let s:metacol = 100
 
 function! VrcGetFoldText()
     let line = getline(v:foldstart)
+    let ind = strwidth(matchstr(line, '^\s\+'))
     let foldstartmarker = escape(matchstr(&foldmarker, '[^,]\+'), '\')
-    let comment = escape(matchstr(&commentstring, '[^%]\+'), '\')
-    let removepat = '\V/*\|*/\|' . foldstartmarker . '\d\?\|' . comment
-    let line = '+' . v:folddashes . substitute(line, removepat, '', 'g')
+    let line = substitute(line, '^\s\+', '', '')
+    "let line = substitute(line, '\V' . foldstartmarker . '\d\?\s\*\$', '', '')
+    let pfx = '+' . v:folddashes . ' '
+    let line = pfx . repeat(' ', ind - strlen(pfx)) . line
     let meta = ' (' . ((v:foldend - v:foldstart) + 1) . ' lines)'
     let occupiedw = strwidth(line) + strwidth(meta)
     if winwidth(0) > s:metacol
-        let fill1n = (s:metacol - occupiedw) / strwidth(s:foldfill)
+        let fill1n = (s:metacol - occupiedw) / strwidth(s:foldfill) - 1
         let fill1  = repeat(s:foldfill, fill1n)
         let occupiedw += strwidth(fill1) + 1
         let fill2n = (winwidth(0) - occupiedw) / strwidth(s:foldfill)
         let fill2  = repeat(s:foldfill, fill2n)
-        return line . fill1 . meta . ' ' . fill2
+        return line . ' ' . fill1 . meta . ' ' . fill2
     endif
     let filln = (winwidth(0) - occupiedw) / strwidth(s:foldfill)
     let fill = repeat(s:foldfill, filln)
