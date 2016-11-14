@@ -217,6 +217,8 @@ if has('gui_running')
     if &columns < 82
         set columns=82
     endif
+elseif $TERM =~ '256color'
+    set t_ut=
 elseif $TERM == 'xterm'
     set t_Co=256  " Force 256 colors.
 endif
