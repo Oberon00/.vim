@@ -166,7 +166,13 @@ let g:syntastic_warning_symbol = '‼'
 let g:syntastic_style_error_symbol = '‡'
 let g:syntastic_style_warning_symbol = '†'
 
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
 function! s:SetPyChecker()
+    let b:syntastic_python_pylint_args =
+                \ '--disable=missing-docstring,invalid-name'
     if getline(1) !~# '\<python3\>'
         return
     endif
