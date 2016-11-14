@@ -188,6 +188,11 @@ let g:syntastic_mode_map = {
             \ 'passive_filetypes': ['c', 'cpp', 'asm', 'rst']
             \ }
 
+let g:syntastic_lua_checkers = ['luac52', 'luacheck']
+let g:syntastic_lua_luac_exec = 'luac52'
+
+let g:lua_check_syntax = 0 " Don't let vim-lua-ftplugin interfere
+
 " Visual settings {{{1
 
 if has('gui_running')
@@ -277,6 +282,9 @@ augroup myvrc
                 \   hi! link hsConSym hsVarSym
                 \ | hi! link hsVarSym Special
                 \ | hi! link ConId Type
+                \ | hi! link luaSpecialValue GruvboxOrange
+                \ | hi! link luaFuncCall GruvboxBlue
+                \ | hi! link luaFuncId GruvboxBlueBold
                 \ | call colorutil#LinkKWOperatorsToKWs()
 augroup END
 
@@ -546,5 +554,14 @@ if has('win32')
     let $LANG = ''
 endif
 
+let g:luasyn_nosymboloperator = 1
+let g:luasyn_nofold = 1
+let g:luasyn_fold_function = 1
+let g:luasyn_fold_table = 1
+let g:luasyn_fold_comment = 1
+let g:luasyn_fold_string = 1
+let g:luasyn_noextendedstdlib = 1
+
+let g:lua_complete_dynamic = 0
 
 " vim: foldmethod=marker
