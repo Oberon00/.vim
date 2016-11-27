@@ -37,13 +37,6 @@ augroup END
 " Pathogen {{{1
 
 let g:pathogen_disabled = []
-if has('win32') || !s:has_python
-    " vim-ipython is too much trouble on Windows. I'm affected by
-    " https://github.com/ivanov/vim-ipython/issues/20 (which can be fixed) and
-    " http://bugs.python.org/issue17213 (which is very annoying).
-    call add(g:pathogen_disabled, 'vim-ipython')
-endif
-
 if !s:has_python
     call add(g:pathogen_disabled, 'ultisnips')
 endif
@@ -61,13 +54,6 @@ endfunction
 let g:pascal_delphi = 1
 let g:pascal_fpc_mode = 'tp'
 
-function! s:SetTexOptions()
-    setlocal shiftwidth=2 softtabstop=2
-    nnoremap <buffer> <F6> :<C-U>w<CR>:<C-U>Latexmk<CR>
-    nnoremap <buffer> <F5> :<C-U>LatexView<CR>
-    call SuperTabSetDefaultCompletionType("<c-p>")
-endfunction
-
 function! s:SetPythonOptions()
     setlocal foldmethod=indent
     if has('python3') && (!has('python') || getline(1) =~? 'python3')
@@ -84,7 +70,8 @@ augroup myvrc
     au FileType c,cpp call SuperTabSetDefaultCompletionType('<C-P>')
     au FileType cpp setlocal commentstring=//\ %s
     au FileType pascal call <SID>SetPascalOptions()
-    au FileType tex,plaintex call <SID>SetTexOptions()
+    let g:tex_flavor = "latex"
+    au FileType tex,plaintex setlocal shiftwidth=2 softtabstop=2
     au FileType snippets setlocal noexpandtab tabstop=4
     au FileType vim setlocal foldmethod=marker foldlevel=0
     au FileType python call <SID>SetPythonOptions()
@@ -118,17 +105,6 @@ au myvrc User Startified setlocal cursorline
 let g:startify_custom_header = []
 
 let g:startify_bookmarks = [{'s': '~/scratch.txt'}]
-
-" LaTeXBox {{{2
-if !has('win32')
-    " On windows this only works when patching latexmk.vim to use !start /min
-    " instead of !start /b.
-    " TODO: Try to reproduce on other machine and/or file bug.
-    let g:LatexBox_latexmk_async = 1
-endif
-" Potentially dangerous but necessary for the minted package.
-let g:LatexBox_latexmk_options = '-latexoption=-shell-escape'
-let g:tex_flavor = "latex"
 
 " UltiSnips {{{2
 let g:UltiSnipsEditSplit = 'vertical'
