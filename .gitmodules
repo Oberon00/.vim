@@ -87,7 +87,7 @@
 	url = https://github.com/tommcdo/vim-lion
 [submodule "bundle/vim-lua-ftplugin"]
 	path = bundle/vim-lua-ftplugin
-	url = https://github.com/xolox/vim-lua-ftplugin
+	url = https://github.com/Oberon00/vim-lua-ftplugin
 [submodule "bundle/vim-lua"]
 	path = bundle/vim-lua
 	url = https://github.com/tbastos/vim-lua
