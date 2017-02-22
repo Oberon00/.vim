@@ -532,7 +532,7 @@ noremap <leader>Y "+y$
 noremap Y y$
 
 " Copy whole buffer to clipboard.
-nnoremap <C-I> gg"+yG
+"nnoremap <C-I> gg"+yG
 " }}}
 
 if has('win32')
