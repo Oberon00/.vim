@@ -1,4 +1,4 @@
 .*
 *.swp
 doc/tags
-spell/*.spl
+spell/
