@@ -59,7 +59,6 @@ function! s:SetPythonOptions()
     if has('python3') && (!has('python') || getline(1) =~? 'python3')
         setlocal omnifunc=python3complete#Complete
     endif
-    call SuperTabSetDefaultCompletionType("<c-x><c-o>")
 endfunction
 
 function! s:SetHtmlOptions()
@@ -67,7 +66,6 @@ function! s:SetHtmlOptions()
 endfunction
 
 augroup myvrc
-    au FileType c,cpp call SuperTabSetDefaultCompletionType('<C-P>')
     au FileType cpp setlocal commentstring=//\ %s
     au FileType pascal call <SID>SetPascalOptions()
     let g:tex_flavor = "latex"
@@ -132,8 +130,6 @@ let g:shell_fullscreen_message = 0
 noremap <F11> :<C-U>Fullscreen<CR>
 inoremap <F11> <C-O>:<C-U>Fullscreen<CR>
 
-" SuperTab {{{2
-let g:SuperTabDefaultCompletionType = 'context'
 
 " Syntastic {{{2
 nnoremap <Leader>sy :<C-U>SyntasticCheck<CR>
