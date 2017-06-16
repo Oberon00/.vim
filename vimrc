@@ -117,6 +117,7 @@ endif
 let g:snips_author = 'Christian Neumüller'
 let g:snips_email = 'cn00@gmx.at'
 let g:snips_github = 'Oberon00'
+let g:ultisnips_python_quoting_style = 'single'
 
 " ipython {{{2
 let g:ipy_perform_mappings = 0
