@@ -394,7 +394,11 @@ nnoremap <F3> :Ag! '\b<cword>\b'<CR>
 
 """ Open command window/explorer here {{{
 if has('win32')
-    nnoremap <silent><C-CR> :<C-U>exec 'silent !start ' . &shell<CR>
+    if executable('powershell')
+        nnoremap <silent><C-CR> :<C-U>silent !start powershell<CR>
+    else
+        nnoremap <silent><C-CR> :<C-U>exec 'silent !start ' . &shell<CR>
+    endif
     nnoremap <silent><C-S-CR> :<C-U>silent !start explorer .<CR>
 else
     if executable('x-terminal-emulator')
