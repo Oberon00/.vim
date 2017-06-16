@@ -37,9 +37,6 @@
 [submodule "bundle/vim-misc"]
 	path = bundle/vim-misc
 	url = https://github.com/xolox/vim-misc
-[submodule "bundle/vim-shell"]
-	path = bundle/vim-shell
-	url = https://github.com/xolox/vim-shell
 [submodule "bundle/vim-sleuth"]
 	path = bundle/vim-sleuth
 	url = https://github.com/tpope/vim-sleuth
@@ -55,18 +52,6 @@
 [submodule "bundle/syntastic"]
 	path = bundle/syntastic
 	url = https://github.com/scrooloose/syntastic/
-[submodule "bundle/vim-less"]
-	path = bundle/vim-less
-	url = https://github.com/groenewege/vim-less
-[submodule "bundle/vim-liquid"]
-	path = bundle/vim-liquid
-	url = https://github.com/tpope/vim-liquid
-[submodule "bundle/scss-syntax.vim"]
-	path = bundle/scss-syntax.vim
-	url = https://github.com/cakebaker/scss-syntax.vim
-[submodule "bundle/ag.vim"]
-	path = bundle/ag.vim
-	url = https://github.com/rking/ag.vim
 [submodule "bundle/vim-characterize"]
 	path = bundle/vim-characterize
 	url = https://github.com/tpope/vim-characterize
