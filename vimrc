@@ -178,7 +178,7 @@ if has('gui_running')
     set guioptions-=m  " Remove menu bar.
     set guioptions-=T  " Remove toolbar.
     if has('win32')
-        set guifontwide=NSimSun:h10
+        set guifontwide=MS_Mincho:h10
         set guifont=Consolas:h10
         if (v:version == 704 && has("patch393")) || v:version > 704
             set renderoptions=type:directx,geom:1
