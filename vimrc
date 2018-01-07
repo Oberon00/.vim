@@ -396,7 +396,7 @@ if has('win32')
     else
         nnoremap <silent><C-CR> :<C-U>exec 'silent !start ' . &shell<CR>
     endif
-    nnoremap <silent><C-S-CR> :<C-U>silent !start explorer .<CR>
+    nnoremap <silent><C-S-CR> :<C-U>silent !start explorer /select,%:p<CR>
 else
     if executable('x-terminal-emulator')
         nnoremap <silent><C-CR> :<C-U>silent !x-terminal-emulator&<CR>
