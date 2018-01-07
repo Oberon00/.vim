@@ -181,14 +181,14 @@ if has('gui_running')
         set guifontwide=MS_Mincho:h10
         set guifont=Consolas:h10
         if (v:version == 704 && has("patch393")) || v:version > 704
-            set renderoptions=type:directx,geom:1
+            set renderoptions=type:directx
         endif
     endif " if has('win32')
     if &lines < 40
         set lines=40
     endif
-    if &columns < 82
-        set columns=82
+    if &columns < 86
+        set columns=86
     endif
 elseif $TERM =~ '256color'
     set t_ut=
@@ -204,6 +204,7 @@ set completeopt-=preview
 set wildmenu  " Display possible commandline completions.
 set showcmd  " Show normal mode commands in bottom line
 set showmode " Show mode (INSERT, VISUAL, ...)
+set number " Show linenumbers
 
 set list listchars=trail:·,tab:→\ 
 if has('win32') && !has('gui_running')
@@ -445,7 +446,7 @@ endif
 nmap <CR> <C-]>
 
 " Move up/down by screen lines, not physical lines {{{
-noremap j gj
+noremap<silent> j gj
 noremap k gk
 function! s:DefaultJK()
     nnoremap <buffer> j j
