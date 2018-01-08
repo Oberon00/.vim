@@ -56,6 +56,7 @@ let g:pascal_fpc_mode = 'tp'
 
 function! s:SetPythonOptions()
     setlocal foldmethod=indent
+    setlocal suffixesadd=.py,/__init__.py
     if has('python3') && (!has('python') || getline(1) =~? 'python3')
         setlocal omnifunc=python3complete#Complete
     endif
