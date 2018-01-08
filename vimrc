@@ -486,11 +486,6 @@ endif
 " Switch buffers {{{
 noremap <silent> <F2> :<C-U>buffer #<CR>
 inoremap <silent> <F2> <C-O>:<C-U>buffer #<CR>
-
-noremap <silent> <C-Tab> :<C-U>bnext<CR>
-inoremap <silent> <C-Tab> <C-O>:<C-U>bnext<CR>
-noremap <silent> <C-S-Tab> :<C-U>bprevious<CR>
-inoremap <silent> <C-S-Tab> <C-O>:<C-U>bprevious<CR>
 "}}}
 
 " Going to files {{{
