@@ -56,9 +56,6 @@ let g:pascal_fpc_mode = 'tp'
 
 function! s:SetPythonOptions()
     setlocal foldmethod=indent
-    if has('python3') && (!has('python') || getline(1) =~? 'python3')
-        setlocal omnifunc=python3complete#Complete
-    endif
 endfunction
 
 function! s:SetHtmlOptions()
@@ -142,25 +139,6 @@ let g:syntastic_style_warning_symbol = '†'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-
-function! s:SetPyChecker()
-    let b:syntastic_python_pylint_args =
-                \ '--disable=missing-docstring,invalid-name'
-    if getline(1) !~# '\<python3\>'
-        return
-    endif
-
-    if has('win32')
-        let pyexe = expand('$SYSTEMDRIVE') . '\Python34\python.exe'
-        if executable(pyexe)
-            let b:syntastic_python_python_exec = pyexe
-        endif
-    else
-        let b:syntastic_python_python_exec = 'python3'
-    endif
-endfunction
-
-au myvrc FileType python call <SID>SetPyChecker()
 
 let g:syntastic_html_checkers = ['tidy', 'jshint']
 let g:syntastic_mode_map = {
