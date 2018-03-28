@@ -1,6 +1,28 @@
-# Typographic quotes:
-
 priority -1
+
+global !p
+import unicodedata
+from vimemoji import DATA as SHORTCODES
+
+def normspace(n):
+	if not n:
+		return n
+	n = n.replace('_', ' ')
+	return n[0] + n[1:].replace('-', ' ')
+
+def nospace(n):
+	return normspace(n).replace(' ', '')
+
+def trylookup(*names):
+	for name in names:
+		try:
+			return unicodedata.lookup(name)
+		except KeyError:
+			pass
+	return None
+endglobal
+
+# Typographic characters:
 
 snippet "\bgq" "„German double quote“" r
 „${VISUAL}$1“
@@ -20,4 +42,20 @@ endsnippet
 
 snippet "\betc" "Ellipsis …" r
 …
+endsnippet
+
+# Emoji
+
+snippet ":([a-z _+0-9-]+):" "Emoji/Named Unicode" r
+`!p if snip.c == '':
+	n =  normspace(match.group(1))
+	snip.rv = SHORTCODES.get(nospace(n)) or trylookup(
+		match.group(1),
+		n,
+		n + ' face',
+		n + 'ing face',
+		n + 'ed face',
+		n + 'ning face') \
+		or match.group(0)
+`
 endsnippet
