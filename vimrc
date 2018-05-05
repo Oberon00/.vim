@@ -129,25 +129,34 @@ noremap <F11> :<C-U>Fullscreen<CR>
 inoremap <F11> <C-O>:<C-U>Fullscreen<CR>
 
 
-" Syntastic {{{2
-nnoremap <Leader>sy :<C-U>SyntasticCheck<CR>
+" ALE {{{2
+function! VrcLinterStatus() abort
+    let l:counts = ale#statusline#Count(bufnr(''))
 
-let g:syntastic_error_symbol = '✘'
-let g:syntastic_warning_symbol = '‼'
-let g:syntastic_style_error_symbol = '‡'
-let g:syntastic_style_warning_symbol = '†'
+    let l:all_errors = l:counts.error + l:counts.style_error
+    let l:all_non_errors = l:counts.total - l:all_errors
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+    let l:result = []
+    if l:all_errors > 0
+        call add(l:result, printf('%d%s', l:all_errors, g:ale_sign_error))
+    endif
+    if l:all_non_errors > 0
+        call add(l:result, printf('%d%s', l:all_non_errors, g:ale_sign_warning))
+    endif
+    return join(l:result, ' ')
+endfunction
 
-let g:syntastic_html_checkers = ['tidy', 'jshint']
-let g:syntastic_mode_map = {
-            \ 'passive_filetypes': ['c', 'cpp', 'asm', 'rst']
-            \ }
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '‼'
+let g:ale_sign_info = '*'
+let g:ale_sign_style_error = '‡'
+let g:ale_sign_style_warning = '†'
 
-let g:syntastic_lua_checkers = ['luac52', 'luacheck']
-let g:syntastic_lua_luac_exec = 'luac52'
+let g:ale_linters = {'c': [], 'cpp': []}
+
+map <F12> <Plug>(ale_go_to_definition)
+map <S-F12> <Plug>(ale_find_references)
+map <C-1> <Plug>(ale_fix)
 
 let g:lua_check_syntax = 0 " Don't let vim-lua-ftplugin interfere
 
@@ -285,6 +294,7 @@ set statusline+=%{expand('%:~:.')}  "File path
 set statusline+=%(\ [%M%R%H%W]%)  " Other flags
 set statusline+=%(\ %q%)  " Location/Quickfix window?
 set statusline+=%(\ %{fugitive#statusline()}%)  " Git branch/commit
+set statusline+=%(\ %{VrcLinterStatus()}%)
 set statusline+=%(\ [%{VrcFileInfo()}]%)  " File info
 
 
