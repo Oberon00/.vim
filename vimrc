@@ -170,7 +170,7 @@ if has('gui_running')
     endif
 elseif $TERM =~ '256color'
     set t_ut=
-elseif $TERM == 'xterm'
+elseif $TERM == 'xterm' || (has('win32') && has('patch-8.0.1783'))
     set t_Co=256  " Force 256 colors.
 endif
 
