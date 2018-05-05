@@ -56,6 +56,7 @@ let g:pascal_fpc_mode = 'tp'
 
 function! s:SetPythonOptions()
     setlocal foldmethod=indent
+    setlocal suffixesadd=.py,/__init__.py
 endfunction
 
 function! s:SetHtmlOptions()
@@ -364,8 +365,11 @@ nnoremap <F6> :w<CR>:<C-U>make!<CR>:copen<CR><C-W>p
 nnoremap <C-K> :cprevious<CR>
 nnoremap <C-J> :cnext<CR>
 
-let g:ag_working_path_mode = 'r'
-nnoremap <F3> :Ag! '\b<cword>\b'<CR>
+if executable('rg')
+    set grepprg=rg\ --vimgrep
+    set grepformat=%f:%l:%c:%m
+endif
+
 
 """ Open command window/explorer here {{{
 if has('win32')
@@ -461,11 +465,6 @@ endif
 " Switch buffers {{{
 noremap <silent> <F2> :<C-U>buffer #<CR>
 inoremap <silent> <F2> <C-O>:<C-U>buffer #<CR>
-
-noremap <silent> <C-Tab> :<C-U>bnext<CR>
-inoremap <silent> <C-Tab> <C-O>:<C-U>bnext<CR>
-noremap <silent> <C-S-Tab> :<C-U>bprevious<CR>
-inoremap <silent> <C-S-Tab> <C-O>:<C-U>bprevious<CR>
 "}}}
 
 " Going to files {{{
