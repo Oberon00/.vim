@@ -46,9 +46,6 @@
 [submodule "bundle/vim-commentary"]
 	path = bundle/vim-commentary
 	url = https://github.com/tpope/vim-commentary
-[submodule "bundle/syntastic"]
-	path = bundle/syntastic
-	url = https://github.com/scrooloose/syntastic/
 [submodule "bundle/vim-characterize"]
 	path = bundle/vim-characterize
 	url = https://github.com/tpope/vim-characterize

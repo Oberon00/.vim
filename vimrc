@@ -282,7 +282,6 @@ set statusline+=%4l,%-5(%3v%)  " Line and column position
 set statusline+=\ %LL " Total line count (with a literal 'L' appended)
 set statusline+=\ %=%<  " Start of right aligned part + truncate here
 set statusline+=%{expand('%:~:.')}  "File path
-set statusline+=%{SyntasticStatuslineFlag()} " Syntastic
 set statusline+=%(\ [%M%R%H%W]%)  " Other flags
 set statusline+=%(\ %q%)  " Location/Quickfix window?
 set statusline+=%(\ %{fugitive#statusline()}%)  " Git branch/commit
