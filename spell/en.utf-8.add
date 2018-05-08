@@ -15,3 +15,6 @@ backend
 Dynatrace
 whitespace
 precompilation
+PurePath
+PurePaths
+ruleset
