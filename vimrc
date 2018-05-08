@@ -153,6 +153,13 @@ let g:ale_sign_style_error = '‡'
 let g:ale_sign_style_warning = '†'
 
 let g:ale_linters = {'c': [], 'cpp': []}
+let g:ale_type_map = {'write-good': {'W': 'WS'}}
+
+"let g:ale_lint_on_insert_leave = 1
+let g:ale_lint_on_text_changed = 'never'
+"let g:ale_lint_delay = 1500
+
+let g:ale_writegood_options = '--no-passive'
 
 map <F12> <Plug>(ale_go_to_definition)
 map <S-F12> <Plug>(ale_find_references)
