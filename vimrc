@@ -3,6 +3,7 @@ set nocompatible
 set encoding=utf-8  " Set utf-8 as default encoding (try recognizing others)
 set fileencodings=ucs-bom,utf-8,cp1252
 set fileformats=unix,dos,mac  " Unix LF by default (but still can read CRLF)
+set nomodeline " Too insecure
 
 " Indendation & Tabs {{{
 " Indentation is 4 spaces, but (existing) hard tabs still occupy 8 columns.
@@ -63,10 +64,11 @@ function! s:SetHtmlOptions()
     nnoremap <buffer> <F5> :<C-U>call xolox#misc#open#file(expand('%'))<CR>
 endfunction
 
+let g:tex_flavor = "latex"
+
 augroup myvrc
     au FileType cpp setlocal commentstring=//\ %s
     au FileType pascal call <SID>SetPascalOptions()
-    let g:tex_flavor = "latex"
     au FileType tex,plaintex setlocal shiftwidth=2 softtabstop=2
     au FileType snippets setlocal noexpandtab tabstop=4
     au FileType vim setlocal foldmethod=marker foldlevel=0
